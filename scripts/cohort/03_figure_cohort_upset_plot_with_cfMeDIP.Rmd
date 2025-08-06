@@ -6,9 +6,8 @@ date: "2024-12-09"
 
 ```{r setup, include=FALSE}
 # set the working directory
-knitr::opts_knit$set(root.dir = "/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/EarlyDetectionHBOC")
-outdir <- "./figures/cohort"
-date <- Sys.Date();
+knitr::opts_knit$set(root.dir = here::here())
+
 ```
 
 
@@ -21,11 +20,14 @@ library(ComplexHeatmap)
 ```
 
 ```{r}
-metadata_path <- "/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/HBOC_cohort_metadata.xlsx" 
+metadata_path <- here::here("raw_data", "cohort", "HBOC_cohort_metadata.xlsx")
 metadata <- read_excel(metadata_path, sheet="April22")
 ```
 
 ```{r}
+outdir <- here::here("figures", "cohort") 
+date <- Sys.Date();
+
 # drop the rows with timepoint buffy 
 metadata <- metadata[!(metadata$timepoint %in% c("buffy", "tumour")) & !(is.na(metadata$`Library Name`) & is.na(metadata$TS) & is.na(metadata$cfMeDIP)), ]
 
@@ -52,7 +54,7 @@ metadata <- metadata %>%
   dplyr::filter(!is.na(`TS`) | !is.na(`Library Name`) | !is.na(`cfMeDIP`))
 
 metadata <- metadata %>%
-  rename(WGS = `Library Name`, Target = TS, cfMeDIP = cfMeDIP)
+  dplyr::rename(WGS = `Library Name`, Target = TS, cfMeDIP = cfMeDIP)
 
 # Replace "" with NA in the relevant columns
 metadata$Target[metadata$Target == ""] <- NA

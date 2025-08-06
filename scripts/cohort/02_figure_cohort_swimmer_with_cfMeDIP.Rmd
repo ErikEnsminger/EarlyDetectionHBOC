@@ -1,14 +1,7 @@
 ---
-title: "cohort_plot"
+title: "02_figure_cohort_swimmer_with_cfMeDIP"
 output: html_document
-date: "2024-10-31"
 ---
-
-```{r setup, include=FALSE}
-# set the working directory
-knitr::opts_knit$set(root.dir = "/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/EarlyDetectionHBOC")
-```
-
 
 ```{r}
 library(tidyverse)
@@ -19,10 +12,14 @@ library(ggplot2)
 library(cowplot)
 ```
 
-```{r}
+```{r setup, include=FALSE}
+# set the working directory
+knitr::opts_knit$set(root.dir = here::here())
+```
 
-outdir <- "./figures/cohort"
-metadata_path <- "/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/HBOC_cohort_metadata.xlsx" 
+```{r}
+outdir <- here::here("figures", "cohort") 
+metadata_path <- here::here("raw_data", "cohort", "HBOC_cohort_metadata.xlsx") 
 metadata <- read_excel(metadata_path, sheet="April22")
 ```
 
@@ -61,7 +58,7 @@ metadata  <- metadata[!grepl("LIB-04-0131-T0", metadata$group_id), ]
 # Find baseline timepoint based on first positive sample or first date_of_blood if none are positive
 baseline_timepoint <- metadata %>%
   group_by(LIB_ID) %>%
-  summarise(
+  dplyr::summarise(
     baseline = if (any(cancer_status == "positive")) {
       min(date_of_blood[cancer_status == "positive"])
     } else {
@@ -104,7 +101,7 @@ library(dplyr)
 data_sero <- data_sero %>%
   group_by(LIB_ID) %>%
   arrange(timepoint) %>%
-  summarise(
+  dplyr::summarise(
     converter = case_when(
       # Forward Phenoconverter: transition from negative to positive
       n() > 1 & any(cancer_status == "negative" & lead(cancer_status) == "positive") ~ "Forward \nPhenoconverters",
@@ -188,7 +185,7 @@ metadata$data_type <- factor(
 # Step 1: Calculate the number of samples per LIB_ID and sort by count
 sample_counts <- metadata %>%
   group_by(LIB_ID) %>%
-  summarise(n = n()) %>%
+  dplyr::summarise(n = n()) %>%
   arrange(n)
 
 # Step 2: Use the sorted LIB_ID order as levels in metadata

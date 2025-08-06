@@ -1,14 +1,7 @@
 ---
-title: "HBOC_integrated"
+title: "03_figure_cfMeDIP_barplots_by_cancer_status_w_methylation"
 output: html_document
-date: "2024-10-01"
 ---
-
-```{r setup, include=FALSE}
-# set the working directory
-knitr::opts_knit$set(root.dir = "/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/EarlyDetectionHBOC")
-```
-
 
 ```{r}
 library(dplyr)
@@ -20,27 +13,28 @@ library(ggpubr)
 library(gridExtra)
 library(readxl)
 library(lubridate)
+library(here)
+```
+
+```{r setup, include=FALSE}
+# set the working directory
+knitr::opts_knit$set(root.dir = here::here())
 ```
 
 ```{r}
-# outdir <- "./figures"
-outdir <- "./figures/cfMeDIP"
-outdir_data <- "./data/cfMeDIP/"
+outdir <- here::here("figures", "cfMeDIP")
+outdir_data <- here::here("data", "cfMeDIP")
 
 # read in data 
-scores_path <- "./data/cfMeDIP/01_processing_cfMeDIP_combined_genomics_methylation.csv"
+scores_path <- here::here("data", "cfMeDIP", "01_processing_cfMeDIP_combined_genomics_methylation.csv")
 scores <- read.csv(scores_path, header=TRUE, check.names=FALSE)
 
-scores_normal_path <- "./data/statistics/03_statistics_control_scores_2025-05-20.csv"
+scores_normal_path <- here::here("data", "statistics", "01_statistics_control_scores.csv")
 scores_normal <- read.csv(scores_normal_path, header=TRUE, check.names=FALSE)
 
-samples <- read_excel("/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/HBOC_cohort_metadata.xlsx", sheet="April22")
+samples <- read_excel(here::here("raw_data", "cohort", "HBOC_cohort_metadata.xlsx"), sheet="April22")
 samples <- samples[!grepl("-B|-Tumour", samples$group_id), ]
 
-# samples$TS[samples$TS == "TGL49_0085_Cf_U_PE_4150_WG"] <- NA
-# samples$TS[samples$TS == "TGL49_0291_Pl_T_PE_405_PG"] <- NA
-# samples$TS[samples$TS == "TGL49_0293_Pl_T_PE_385_PG"] <- NA
-# samples$TS[samples$TS == "TGL49_0252_Cf_n_PE_1110_WG"] <- NA
 samples <- samples[!grepl("T-788-T0", samples$group_id), ]
 samples <- samples[!grepl("T-207-T0", samples$group_id), ]
 ```
@@ -149,14 +143,20 @@ data <- data %>%
 ```
 
 ```{r}
+# Identify z-score columns in scores_normal
+zscore_cols <- grep("^AverageZScore_", colnames(scores_normal), value = TRUE)
+
+# Calculate cumulative z-score for each normal sample
+scores_normal$consensus_griffin  <- rowSums(scores_normal[, zscore_cols], na.rm = TRUE)
+```
+
+```{r}
 nucleosome_peak_cutoff <- quantile(scores_normal$avg_zscore_nuc_peaks, 0.99, na.rm = TRUE)
 tumour_fraction_cutoff <- quantile(scores_normal$Tumour.Fraction , 0.99, na.rm = TRUE)
 fragment_ratio_cutoff <- quantile(scores_normal$fragment_ratio_corr , 0.01, na.rm = TRUE)
 fragment_length_cutoff <- quantile(scores_normal$FS , 0.99, na.rm = TRUE)
-consensus_griffin_cutoff <- 1 
+consensus_griffin_cutoff <- quantile(scores_normal$consensus_griffin, 0.01, na.rm = TRUE)
 integrated_ctDNA_score_cutoff <- 0.5 
-# HBOC_breast_cutoff <- 0.0396
-# HBOC_ovarian_cutoff <- 0.18
 
 HBOC_breast_cutoff <-  0.0506
 HBOC_ovarian_cutoff <- 0.155
@@ -177,7 +177,7 @@ data$integrated_ctDNA_score[
   data$months_to_positive %in% c("UNK", "pending")
 ] <- "NS"
 
-data$consensus_griffin <- ifelse(data$consensus_griffin >= consensus_griffin_cutoff, "pos", "neg")
+data$consensus_griffin <- ifelse(data$consensus_griffin < consensus_griffin_cutoff, "pos", "neg")
 # Set consensus to "NS" for NA or empty Library Name
 data$consensus_griffin[is.na(data$`Library Name`) | data$`Library Name` == ""] <- "NS"
 

@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+# Set global seed for reproducibility
+set.seed(42)
+
 library(rmarkdown)
 library(here)
 
@@ -214,14 +217,14 @@ cat("Griffin processing pipeline completed successfully!\n")
 # Statistics
 # ==========================
 
-# 03_processing_statistics.Rmd
+# 01_processing_statistics.Rmd
 rmarkdown::render(
   input       = here::here("scripts", "statistics", "01_processing_statistics.Rmd"),
   output_file = here::here("HTML", "01_processing_statistics.html"),
   clean       = TRUE
 )
 
-# 04_processing_statistics_integrated_cancer_scores.Rmd
+# 02_processing_statistics_integrated_cancer_scores.Rmd
 rmarkdown::render(
   input       = here::here("scripts", "statistics", "02_processing_statistics_integrated_cancer_scores.Rmd"),
   output_file = here::here("HTML", "02_processing_statistics_integrated_cancer_scores.html"),
@@ -324,6 +327,38 @@ rmarkdown::render(
 rmarkdown::render(
   input       = here::here("scripts", "metrics", "08_metrics_processing_coverage_information.Rmd"),
   output_file = here::here("HTML", "08_metrics_processing_coverage_information.html"),
+  clean       = TRUE
+)
+
+# ==========================
+# Classifier
+# ==========================
+
+rmarkdown::render(
+  input       = here::here("scripts", "classifier", "01_processing_classifier.Rmd"),
+  output_file = here::here("HTML", "01_processing_classifier.html"),
+  clean       = TRUE
+)
+
+# ==========================
+# Cohort
+# ==========================
+
+rmarkdown::render(
+  input       = here::here("scripts", "cohort", "01_processing_cohort_breakdown_with_cfMeDIP.Rmd"),
+  output_file = here::here("HTML", "01_processing_cohort_breakdown_with_cfMeDIP.html"),
+  clean       = TRUE
+)
+
+rmarkdown::render(
+  input       = here::here("scripts", "cohort", "02_figure_cohort_swimmer_with_cfMeDIP.Rmd"),
+  output_file = here::here("HTML", "02_figure_cohort_swimmer_with_cfMeDIP.html"),
+  clean       = TRUE
+)
+
+rmarkdown::render(
+  input       = here::here("scripts", "cohort", "03_figure_cohort_upset_plot_with_cfMeDIP.Rmd"),
+  output_file = here::here("HTML", "03_figure_cohort_upset_plot_with_cfMeDIP.html"),
   clean       = TRUE
 )
 

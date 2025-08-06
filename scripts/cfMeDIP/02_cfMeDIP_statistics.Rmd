@@ -1,20 +1,7 @@
 ---
 title: "02_cfMeDIP_statistics"
 output: html_document
-date: "2025-05-09"
 ---
-
----
-title: "HBOC_integrated"
-output: html_document
-date: "2024-10-01"
----
-
-```{r setup, include=FALSE}
-# set the working directory
-knitr::opts_knit$set(root.dir = "/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/EarlyDetectionHBOC")
-```
-
 
 ```{r}
 library(dplyr)
@@ -26,29 +13,30 @@ library(ggpubr)
 library(gridExtra)
 library(readxl)
 library(lubridate)
+library(here)
+```
+
+```{r setup, include=FALSE}
+# set the working directory
+knitr::opts_knit$set(root.dir = here::here())
 ```
 
 ```{r}
 # outdir <- "./figures"
-outdir <- "./figures/cfMeDIP"
-outdir_data <- "./data/cfMeDIP/"
+outdir <- here::here("figures", "cfMeDIP")
+outdir_data <- here::here("data", "cfMeDIP")
 
 # read in data 
-scores_path <- "./data/cfMeDIP/01_processing_cfMeDIP_combined_genomics_methylation.csv"
+scores_path <- here::here("data", "cfMeDIP", "01_processing_cfMeDIP_combined_genomics_methylation.csv") 
 scores <- read.csv(scores_path, header=TRUE, check.names=FALSE)
 
-# scores_normal_path <- "./data/statistics/03_statistics_control_scores_2025-04-22.csv"
-# scores_normal <- read.csv(scores_normal_path, header=TRUE, check.names=FALSE)
-# 
-# samples <- read_excel("/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/HBOC_cohort_metadata.xlsx", sheet="April22")
-# samples <- samples[!grepl("-B|-Tumour", samples$group_id), ]
-
-# samples$TS[samples$TS == "TGL49_0085_Cf_U_PE_4150_WG"] <- NA
-# samples$TS[samples$TS == "TGL49_0291_Pl_T_PE_405_PG"] <- NA
-# samples$TS[samples$TS == "TGL49_0293_Pl_T_PE_385_PG"] <- NA
-# samples$TS[samples$TS == "TGL49_0252_Cf_n_PE_1110_WG"] <- NA
-# samples <- samples[!grepl("T-788-T0", samples$group_id), ]
-# samples <- samples[!grepl("T-207-T0", samples$group_id), ]
+scores <- scores[
+  !(
+    is.na(scores$`Library Name`) | scores$`Library Name` == "" | scores$`Library Name` == "NS" |
+    is.na(scores$TS) | scores$TS == "" | scores$TS == "NS" |
+    is.na(scores$cfMeDIP) | scores$cfMeDIP == "" | scores$cfMeDIP == "NS"
+  ),
+]
 ```
 
 ```{r}
@@ -57,7 +45,6 @@ integrated_ctDNA_score_cutoff <- 0.5
 # 99 percentile
 HBOC_breast_cutoff <-  0.0506
 HBOC_ovarian_cutoff <- 0.155
-
 ```
 
 ```{r}
@@ -131,7 +118,7 @@ compute_confusion_metrics <- function(df, prediction_col, cancer_type_match) {
 
 ```{r}
 scores %>% 
-  filter(is.na(.data[["HBOC_breast"]])) %>% 
+  dplyr::filter(is.na(.data[["HBOC_breast"]])) %>% 
   { 
     cat("\nRows where", "HBOC_breast", "is NA:\n"); 
     print(.); 

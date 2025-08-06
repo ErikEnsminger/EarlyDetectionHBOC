@@ -1,25 +1,22 @@
 ---
-title: "01_proessing_cohort_breakdown"
+title: "01_proessing_cohort_breakdown_with_cfMeDIP"
 output: html_document
-date: "2025-04-05"
 ---
-
-```{r setup, include=FALSE}
-# set the working directory
-knitr::opts_knit$set(root.dir = "/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/EarlyDetectionHBOC")
-```
-
 
 ```{r}
 library(dplyr)
 library(readxl)
-library(dplyr)
 library(glue)
+library(here)
 ```
 
+```{r setup, include=FALSE}
+# set the working directory
+knitr::opts_knit$set(root.dir = here::here())
+```
 
 ```{r}
-samples <- read_excel("/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/HBOC_cohort_metadata.xlsx", sheet = "April22")
+samples <- read_excel(here::here("raw_data", "cohort", "HBOC_cohort_metadata.xlsx"), sheet = "April22")
 samples <- samples[!grepl("-B|-Tumour", samples$group_id), ]
 
 samples <- samples[!( 
@@ -102,7 +99,7 @@ categories <- c(
 
 category_summary <- samples %>%
   group_by(source) %>%
-  summarise(individuals = n_distinct(LIB_ID), samples = n()) %>%
+  dplyr::summarise(individuals = n_distinct(LIB_ID), samples = n()) %>%
   mutate(category = categories[source])
 
 # --- Serial sample stats ---
