@@ -1,0 +1,221 @@
+---
+title: "Combined_genomic_and_methlyation"
+output: html_document
+date: "2025-05-07"
+---
+
+```{r setup, include=FALSE}
+# set the working directory
+knitr::opts_knit$set(root.dir = "/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/EarlyDetectionHBOC")
+outdir <- "./figures/cohort"
+date <- Sys.Date();
+```
+
+
+```{r}
+library(tidyverse)
+library(ggpubr)
+library(readxl)
+library(dplyr)
+library(ComplexHeatmap)
+```
+
+```{r}
+samples_path <- "/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/HBOC_cohort_metadata.xlsx" 
+samples <- read_excel(samples_path, sheet="April22")
+
+# read in data 
+scores_path <- "./data/statistics/04_processing_statistics_integrated_cancer_scores_2025-04-25.csv"
+scores <- read.csv(scores_path, header=TRUE, check.names=FALSE)
+scores <- scores[, !colnames(scores) %in% c("HBOC_breast", "HBOC_ovarian")]
+
+scores_normal_path <- "./data/statistics/03_statistics_control_scores_2025-04-22.csv"
+scores_normal <- read.csv(scores_normal_path, header=TRUE, check.names=FALSE)
+
+
+samples <- samples[!grepl("T-788-T0", samples$group_id), ]
+samples <- samples[!grepl("T-207-T0", samples$group_id), ]
+
+
+
+methylation_scores <- "./raw_data/cfMeDIP/methy_scores_0502.tsv"
+# Import the methylation scores from a TSV file
+methylation_scores <- read.delim(methylation_scores, 
+                                 header = TRUE, 
+                                 sep = "\t", 
+                                 check.names = FALSE, 
+                                 stringsAsFactors = FALSE)
+```
+
+
+# formatting Time_to_next_positive
+```{r}
+# Calculate months_to_positive
+samples$months_to_positive <- ifelse(
+  samples$cancer_status == "positive", 
+  "positive",  # Assign "positive" for positive cases
+  ifelse(
+    samples$Time_to_next_positive %in% c("no_future_cancer", "UNK", "pending"), 
+    samples$Time_to_next_positive,  # Keep special cases as is
+    as.numeric(interval(ymd(samples$date_of_blood), ymd(samples$Time_to_next_positive_dates)) / months(1)) # Calculate months
+  )
+)
+
+# Ensure calculated months are numeric where applicable, retaining special cases as strings
+samples$months_to_positive <- ifelse(
+  samples$months_to_positive %in% c("no_future_cancer", "UNK", "pending", "positive"),
+  samples$months_to_positive,  # Keep as is for special cases and "positive"
+  as.numeric(samples$months_to_positive) # Convert calculated values to numeric
+)
+```
+
+
+```{r}
+samples <- samples[, c("group_id", "Library Name", "TS", "source", "cancer_type", "survivor", "months_to_positive")]
+```
+
+```{r}
+data <- merge(samples, scores, by.x = c("group_id", "Library Name", "TS"), by.y = c("group_id", "Library Name", "TS"), all.y = TRUE)
+data <- data %>% dplyr::select(group_id, LIB_ID, `Library Name`, TS, everything())
+
+data$TS[data$TS == "TGL49_0085_Cf_U_PE_4150_WG"] <- ""
+data$TS[data$TS == "TGL49_0291_Pl_T_PE_405_PG"] <- ""
+data$TS[data$TS == "TGL49_0293_Pl_T_PE_385_PG"] <- ""
+data$TS[data$TS == "TGL49_0252_Cf_n_PE_1110_WG"] <- ""
+
+# remove 2 CHARMQ samples
+data <- data[!grepl("T-788-T0", data$group_id), ]
+data <- data[!grepl("T-207-T0", data$group_id), ]
+
+# remove cfMeDIP samples 
+# data <- data[!grepl("LIB-04-0649-T0", data$group_id), ]
+# data <- data[!grepl("LIB-04-0441-T1", data$group_id), ]
+# data <- data[!grepl("LIB-04-0024-T2", data$group_id), ]
+# data <- data[!grepl("LIB-04-0131-T0", data$group_id), ]
+```
+
+```{r}
+# group ovarian cancers into "ovarian" 
+data$cancer_type[grepl("hgsoc", data$cancer_type)] <- "ovarian"
+```
+
+```{r}
+# Replace values across the entire dataframe
+data[data == "Missense_Mutation"] <- "missense"
+data[data == "Nonsense_Mutation"] <- "stop"
+data[data == "Frame_Shift_Ins"] <- "frameshift"
+data[data == "Frame_Shift_Del"] <- "frameshift"
+data[data == "Splice_Site"] <- "splice_site"
+data[data == "Deletion"] <- "deletion"
+data[data == "Duplication"] <- "duplication"
+
+data[data == "Frame_Shift_Del;Frame_Shift_Del;Frame_Shift_Del"] <- "frameshift;frameshift;frameshift"
+data[data == "Missense_Mutation;Missense_Mutation"] <- "missense;missense"
+data[data == "Missense_Mutation;Frame_Shift_Del"] <- "missense;frameshift"
+
+data[data == "Nonsense_Mutation;Missense_Mutation"] <- "stop;missense"
+```
+
+
+```{r}
+sites <- c("OV", "BRCA", "PRAD", "LUAD", "BLCA", "LGG", "ACC", "CESC", "CHOL", "COAD", "ESCA", "GBM", "HNSC", 
+  "KIRC", "KIRP", "LIHC", "LUSC", "MESO", "PCPG", "SKCM", "STAD", "TGCT", "THCA", "UCEC")
+
+names <- c("Ovarian Cancer", "Breast Cancer", "Prostate Cancer", "Lung Adenocarcinoma", "Bladder Cancer", 
+  "Brain Lower Grade Glioma", "Adrenocortical Carcinoma", "Cervical and Endocervical Cancer", 
+  "Cholangiocarcinoma", "Colon Cancer", "Esophageal Cancer", "Glioblastoma", "Head and Neck Cancer", 
+  "Kidney Clear Cell Carcinoma", "Kidney Papillary Cell Carcinoma", "Liver Cancer", 
+  "Lung Squamous Cell Carcinoma", "Mesothelioma", "Pheochromocytoma and Paraganglioma", "Melanoma", 
+  "Stomach Cancer", "Testicular Germ Cell Tumors", "Thyroid Cancer", "Uterine Endometrial Cancer")
+
+lists <- c("ovarian", "breast", "prostate", "lung_adenocarcinoma", "bladder", "brain", "adrenocortical", 
+  "cervical_endocervical", "cholangiocarcinoma", "colon", "esophageal", "glioblastoma", "head_neck", 
+  "kidney_clear_cell", "kidney_papillary_cell", "liver", "lung_squamous_cell", "mesothelioma", 
+  "pheochromocytoma_paraganglioma", "melanoma", "stomach", "testicular_germ_cell", "thyroid", "uterine_endometrial")
+
+```
+
+# Process griffin scores to combine to one column 
+```{r}
+zscore_cols <- grep("^AverageZScore_", colnames(scores_normal), value = TRUE)
+
+griffin_cutoffs <- sapply(zscore_cols, function(col) {
+  quantile(scores_normal[[col]], 0.01, na.rm = TRUE)
+})
+names(griffin_cutoffs) <- gsub("^AverageZScore_", "AverageZScore_", zscore_cols)
+
+for (col in names(griffin_cutoffs)) {
+  #print(col)
+  if (col %in% colnames(data)) {
+    cutoff <- griffin_cutoffs[col]
+    data[[col]] <- ifelse(data[[col]] < cutoff, "pos", "neg")
+    data[[col]][is.na(data$`Library Name`) | data$`Library Name` == ""] <- "NS"
+  }
+}
+
+# Consensus griffin: "pos" if 5 or more sites are "pos"
+# Count the number of "pos" across all z-score columns for each row
+data$consensus_griffin <- apply(data[, zscore_cols], 1, function(row) {
+  sum(row == "pos", na.rm = TRUE)
+})
+```
+
+```{r}
+nucleosome_peak_cutoff <- quantile(scores_normal$avg_zscore_nuc_peaks, 0.99, na.rm = TRUE)
+tumour_fraction_cutoff <- quantile(scores_normal$Tumour.Fraction , 0.99, na.rm = TRUE)
+fragment_ratio_cutoff <- quantile(scores_normal$fragment_ratio_corr , 0.01, na.rm = TRUE)
+fragment_length_cutoff <- quantile(scores_normal$FS , 0.99, na.rm = TRUE)
+consensus_griffin_cutoff <- 1 
+integrated_ctDNA_score_cutoff <- 0.5 
+```
+
+
+```{r}
+# Create new binarized columns without overwriting originals
+data$integrated_ctDNA_score_bin <- ifelse(data$integrated_ctDNA_score >= integrated_ctDNA_score_cutoff, "pos", "neg")
+data$integrated_ctDNA_score_bin[
+  is.na(data$`Library Name`) | data$`Library Name` == "" |
+  is.na(data$TS) | data$TS == "" |
+  data$months_to_positive %in% c("UNK", "pending")
+] <- "NS"
+
+data$consensus_griffin_bin <- ifelse(data$consensus_griffin >= consensus_griffin_cutoff, "pos", "neg")
+data$consensus_griffin_bin[is.na(data$`Library Name`) | data$`Library Name` == ""] <- "NS"
+
+data$fragment_ratio_corr_bin <- ifelse(data$fragment_ratio_corr <= fragment_ratio_cutoff, "pos", "neg")
+data$fragment_ratio_corr_bin[is.na(data$`Library Name`) | data$`Library Name` == ""] <- "NS"
+
+data$avg_zscore_nuc_peaks_bin <- ifelse(data$avg_zscore_nuc_peaks >= nucleosome_peak_cutoff, "pos", "neg")
+data$avg_zscore_nuc_peaks_bin[is.na(data$`Library Name`) | data$`Library Name` == ""] <- "NS"
+
+data$Tumour.Fraction_bin <- ifelse(data$Tumour.Fraction >= tumour_fraction_cutoff, "pos", "neg")
+data$Tumour.Fraction_bin[is.na(data$`Library Name`) | data$`Library Name` == ""] <- "NS"
+
+data$FS_bin <- ifelse(data$FS >= fragment_length_cutoff, "pos", "neg")
+data$FS_bin[is.na(data$`Library Name`) | data$`Library Name` == ""] <- "NS"
+
+# Clean up NA or empty strings for consistency
+data$`Library Name`[is.na(data$`Library Name`) | data$`Library Name` == ""] <- "NS"
+data$Mutation[is.na(data$TS) | data$TS == ""] <- "NS"
+data$TS[is.na(data$TS) | data$TS == ""] <- "NS"
+```
+
+```{r}
+data <- data[, !grepl("^AverageZScore_", colnames(data))]
+```
+
+
+```{r}
+# Subset desired columns from methylation_scores
+methylation_subset <- methylation_scores[, c("group_id", "Eric", "Vrba", "HBOC_breast", "HBOC_ovarian")]
+
+# Merge with data on group_id
+data_merged <- merge(data, methylation_subset, by = "group_id", all.x = TRUE)
+```
+
+```{r}
+# Write only mismatched rows to CSV
+write.csv(data_merged,
+          file = file.path(outdir, "01_combined_genomics_methylation.csv"),
+          row.names = FALSE)
+```
