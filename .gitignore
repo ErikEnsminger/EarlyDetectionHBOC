@@ -8,3 +8,12 @@
 raw_data/
 data/
 figures/
+
+# macOS
+.DS_Store
+
+# RStudio project file (optional)
+*.Rproj
+
+# Ignore generated HTML reports
+HTML/*.html
