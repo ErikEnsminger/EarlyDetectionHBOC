@@ -10,7 +10,7 @@ data/
 figures/
 
 # macOS
-.DS_Store
+*.DS_Store
 
 # RStudio project file (optional)
 *.Rproj
