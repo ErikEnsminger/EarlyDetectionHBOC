@@ -69,7 +69,7 @@ samples$months_to_positive <- ifelse(
 ```
 
 ```{r}
-samples <- samples[, c("group_id", "Library Name", "TS", "source", "cancer_type", "survivor", "months_to_positive")]
+samples <- samples[, c("group_id", "Library Name", "TS", "source", "cancer_type", "survivor", "months_to_positive", "next_positive_cancer")]
 ```
 
 ```{r}

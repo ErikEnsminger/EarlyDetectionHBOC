@@ -362,6 +362,30 @@ rmarkdown::render(
   clean       = TRUE
 )
 
+# ==========================
+# cfMeDIP
+# ==========================
+
+# 01_cfMeDIP_combined_genomic_and_methylation.Rmd
+rmarkdown::render(
+  input       = here::here("scripts", "cfMeDIP", "01_cfMeDIP_combined_genomic_and_methylation.Rmd"),
+  output_file = here::here("HTML", "01_cfMeDIP_combined_genomic_and_methylation.html"),
+  clean       = TRUE
+)
+
+# 02_cfMeDIP_statistics.Rmd
+rmarkdown::render(
+  input       = here::here("scripts", "cfMeDIP", "02_cfMeDIP_statistics.Rmd"),
+  output_file = here::here("HTML", "02_cfMeDIP_statistics.html"),
+  clean       = TRUE
+)
+
+# 03_figure_cfMeDIP_barplots_by_cancer_status_w_methylation.Rmd
+rmarkdown::render(
+  input       = here::here("scripts", "cfMeDIP", "03_figure_cfMeDIP_barplots_by_cancer_status_w_methylation.Rmd"),
+  output_file = here::here("HTML", "03_figure_cfMeDIP_barplots_by_cancer_status_w_methylation.html"),
+  clean       = TRUE
+)
 # =======================================================
 # Completion
 # =======================================================
