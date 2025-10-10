@@ -297,7 +297,7 @@ col_fun3 <- colorRamp2(c(0, 1),
 col_status <- c("Cancer Positive (First Positive)"= "#f87544", "Cancer Negative (Survivor No)" = "#9467bd", "Cancer Positive (Survivor Yes)" = "#f4c842", "Cancer Negative (Survivor Yes)" = "#1f77b4", "Healthy" = "#B2DF8A")
 
 col <- c(missense = "#4DAF4A", missense2 = "#4DAF4A", frameshift = "black", stop = "#A65628",
-         deletion = "#377EB8", splice_site = "#984EA3", NS = "grey95", not_sequenced = "grey65")
+         deletion = "#377EB8", splice_site = "#984EA3", NS = "white", not_sequenced = "grey65")
 ```
 
 
@@ -369,66 +369,62 @@ data_status <- data_status[sample_order_chr, , drop = FALSE]
 data_corr_df <- data_corr_df[sample_order_chr, , drop = FALSE]
 ```
 
+
 ```{r}
+anno_name_order <- c(
+  "Correlation \nto Healthy", "  ",
+  "Tumour\nFraction", "   ",
+  "BRCA1", "BRCA2", "TP53", "PALB2", " "
+)
+
+gene_labels <- c("BRCA1","BRCA2","TP53","PALB2")
+fontface_vec <- ifelse(anno_name_order %in% gene_labels, "italic", "plain")
+
 right_annotation <- rowAnnotation(
-  # 1) Mutation annotations
-  BRCA1 = anno_simple(data_corr_df$BRCA1_somatic, col = col, simple_anno_size = unit(1.5, "mm")),
-  BRCA2 = anno_simple(data_corr_df$BRCA2_somatic, col = col, simple_anno_size = unit(1.5, "mm")),
-  TP53  = anno_simple(data_corr_df$TP53,  col = col, simple_anno_size = unit(1.5, "mm")),
-  PALB2 = anno_simple(data_corr_df$PALB2, col = col, simple_anno_size = unit(1.5, "mm")),
-  " "   = anno_empty(which = "row", border = FALSE, width = unit(1, "mm")),
-
-  # 2) Line annotations
-
-  "Tumour\nFraction" = anno_lines(
-    data_corr_df[, c(
-      "TumourFraction","LOD_TF",
-      "vaf_BRCA1_somatic","vaf_BRCA2_somatic","vaf_TP53","vaf_PALB2"
-    )],
-    add_points = TRUE,
-    pch   = c(16, NA, 4, 4, 4, 4),
-    # use "transparent" for no‐line color, and "blank" for no‐line type
-    gp    = gpar(
-      col = c(NA, "red", rep("transparent", 4)),
-      lty = c("solid","dashed", rep("blank",     4))
-    ),
-    pt_gp = gpar(
-      col = c("black",   NA,   rep("red",       4))
-    ),
-    size       = unit(1, "mm"),
-    axis_param = list(
-      side       = "bottom",
-      labels_rot = 0,
-      gp         = gpar(fontsize = 10)
-    ),
-    border = FALSE
-  ),
-  
-  "  " = anno_empty(which = "row", border = FALSE, width = unit(2, "mm")),  # second spacer
-
+  # 1) Correlation
   "Correlation \nto Healthy" = anno_lines(
     data_corr_df[, c("correlation", "LOD")],
     add_points = TRUE,
-    pch        = c(16, NA),
-    gp         = gpar(col = c(NA, "red"), lty = c("solid", "dashed")),
-    pt_gp      = gpar(col = c("black", NA)),
-    size       = unit(1, "mm"),
-    ylim       = c(1, 0),
-    axis_param = list(
-      at         = c(0, 0.5, 1),
-      labels     = c("0", "0.5", "1"),
-      side       = "bottom",
-      labels_rot = 0,
-      gp         = gpar(fontsize = 10)
-    ),
+    pch = c(16, NA),
+    gp = gpar(col = c(NA, "red"), lty = c("solid", "dashed")),
+    pt_gp = gpar(col = c("black", NA)),
+    size = unit(1, "mm"),
+    ylim = c(1, 0),
+    axis_param = list(at = c(0, 0.5, 1), labels = c("0","0.5","1"),
+                      side = "bottom", labels_rot = 0, gp = gpar(fontsize = 10)),
     border = FALSE
   ),
 
-  # General
-  width                = unit(8, "cm"),
+  "  " = anno_empty(which = "row", border = FALSE, width = unit(2, "mm")),
+
+  # 2) Tumour fraction
+  "Tumour\nFraction" = anno_lines(
+    data_corr_df[, c("TumourFraction","LOD_TF",
+                     "vaf_BRCA1_somatic","vaf_BRCA2_somatic","vaf_TP53","vaf_PALB2")],
+    add_points = TRUE,
+    pch = c(16, NA, 4, 4, 4, 4),
+    gp  = gpar(col = c(NA, "red", rep("transparent", 4)),
+               lty = c("solid","dashed", rep("blank", 4))),
+    pt_gp = gpar(col = c("black", NA, rep("red", 4))),
+    size = unit(1, "mm"),
+    axis_param = list(side = "bottom", labels_rot = 0, gp = gpar(fontsize = 10)),
+    border = FALSE
+  ),
+
+  "   " = anno_empty(which = "row", border = FALSE, width = unit(2, "mm")),
+
+  # 3) Mutations
+  BRCA1 = anno_simple(data_corr_df$BRCA1_somatic, col = col, simple_anno_size = unit(2, "mm")),
+  BRCA2 = anno_simple(data_corr_df$BRCA2_somatic, col = col, simple_anno_size = unit(2, "mm")),
+  TP53  = anno_simple(data_corr_df$TP53,          col = col, simple_anno_size = unit(2, "mm")),
+  PALB2 = anno_simple(data_corr_df$PALB2,         col = col, simple_anno_size = unit(2, "mm")),
+  " "   = anno_empty(which = "row", border = FALSE, width = unit(1, "mm")),
+
+  # names: only genes italic
   annotation_name_side = "bottom",
-  annotation_name_gp   = gpar(fontsize = 10.5),
-  border               = FALSE
+  annotation_name_gp   = gpar(fontsize = 10.5, fontface = fontface_vec),
+  border               = FALSE,
+  width                = unit(9, "cm")
 )
 ```
 
@@ -441,10 +437,10 @@ top_annotation <- HeatmapAnnotation("Healthy Median" = anno_lines(normal_median,
                                                                             gp = gpar(fontsize = 10)),
                                                           border = FALSE),
                                     #"Differential Regions" = data_freq3,
-                                    "% HBOC >3 SD" = data_freq2,
-                                    "HBOC Cohort Median" = data_freq,
-                                    col = list("HBOC Cohort Median" = col_fun,
-                                               "% HBOC >3 SD" = col_fun2),
+                                    #"% HBOC >3 SD" = data_freq2,
+                                    #"HBOC Cohort Median" = data_freq,
+                                    #col = list(#"HBOC Cohort Median" = col_fun,
+                                               #"% HBOC >3 SD" = col_fun2),
                                                #"Differential Regions" = col_fun3),
                                     border = FALSE,
                                     height = unit(2, "cm"),
@@ -517,36 +513,38 @@ annotation_legend = packLegend(
       direction    = "horizontal",
       grid_height  = unit(2, "mm"),
       legend_width = unit(2, "cm")
-    ),
+    )
 
     # SD from Healthy (HBOC Median)
-    Legend(
-      title        = "SD from Healthy\n(HBOC Median)",
-      at           = c(-3, 0, 3),
-      col_fun      = col_fun,
-      title_gp     = gpar(fontsize = fs_legend_title),
-      labels_gp    = gpar(fontsize = fs_legend_labels),
-      direction    = "horizontal",
-      grid_height  = unit(2, "mm"),
-      legend_width = unit(2, "cm")
-    ),
+    # Legend(
+    #   title        = "SD from Healthy\n(HBOC Median)",
+    #   at           = c(-3, 0, 3),
+    #   col_fun      = col_fun,
+    #   title_gp     = gpar(fontsize = fs_legend_title),
+    #   labels_gp    = gpar(fontsize = fs_legend_labels),
+    #   direction    = "horizontal",
+    #   grid_height  = unit(2, "mm"),
+    #   legend_width = unit(2, "cm")
+    # ),
 
     # % of Cohort >3 SD
-    Legend(
-      title        = "% of Cohort",
-      at           = c(0, 50),
-      col_fun      = col_fun2,
-      title_gp     = gpar(fontsize = fs_legend_title),
-      labels_gp    = gpar(fontsize = fs_legend_labels),
-      direction    = "horizontal",
-      grid_height  = unit(2, "mm"),
-      legend_width = unit(2, "cm")
-    )
+    # Legend(
+    #   title        = "% of Cohort",
+    #   at           = c(0, 50),
+    #   col_fun      = col_fun2,
+    #   title_gp     = gpar(fontsize = fs_legend_title),
+    #   labels_gp    = gpar(fontsize = fs_legend_labels),
+    #   direction    = "horizontal",
+    #   grid_height  = unit(2, "mm"),
+    #   legend_width = unit(2, "cm")
+    # )
 
   
   ),
   
-  direction = "horizontal"
+  direction = "horizontal",
+  gap = unit(15, "mm"),    # increase spacing between legends
+  annotation_legend_width = unit(10, "cm")  # widen all annotation legend
 )
 ```
 
@@ -587,7 +585,7 @@ row_order_explicit <- rownames(data_change)
 
 ## Generate oncoprint
 pdf(file.path(outdir, "02_figure_fragment_ratio_heatmap_to_publish.pdf"), height = 7.5, width = 13)
-Heatmap <- Heatmap(data_change,
+ht <- Heatmap(data_change,
                    col = col_heat,
                    show_row_names = FALSE,
                    show_column_names = FALSE,
@@ -609,8 +607,8 @@ Heatmap <- Heatmap(data_change,
                    cluster_row_slices = FALSE,
                    border = FALSE,
                    show_row_dend = FALSE)
-draw(
-  Heatmap,
+ht <- draw(
+  ht,
   heatmap_legend_list  = annotation_legend,  # use your packed legend as the heatmap’s legend
   show_annotation_legend = FALSE,            # don’t draw any “annotation legends”
   show_heatmap_legend    = TRUE,             # but do draw the “heatmap legends”
@@ -642,5 +640,5 @@ dev.off()
 ```
 
 ```{r}
-Heatmap
+ht
 ```
