@@ -69,25 +69,32 @@ samples <- samples[, c("group_id", "Library Name", "TS", "source", "cancer_type"
 ```
 
 ```{r}
-data <- merge(samples, scores, by.x = c("group_id", "Library Name", "TS"), by.y = c("group_id", "Library Name", "TS"), all.y = TRUE)
-data <- data %>% dplyr::select(group_id, LIB_ID, `Library Name`, TS, everything())
+# Exclusions (same ones you had)
+ban_group <- c("T-788-T0","T-207-T0","LIB-04-0649-T0",
+               "LIB-04-0441-T1","LIB-04-0024-T2","LIB-04-0131-T0")
+ban_ts_wgs <- c("TGL49_0085_Cf_U_PE_4150_WG",
+                "TGL49_0291_Pl_T_PE_405_PG",
+                "TGL49_0293_Pl_T_PE_385_PG",
+                "TGL49_0252_Cf_n_PE_1110_WG")
 
-# remove WGS samples that were don't have TS done - we just used to verify germline mutatation
-data$TS[data$TS == "TGL49_0085_Cf_U_PE_4150_WG"] <- ""
-data$TS[data$TS == "TGL49_0291_Pl_T_PE_405_PG"] <- ""
-data$TS[data$TS == "TGL49_0293_Pl_T_PE_385_PG"] <- ""
-data$TS[data$TS == "TGL49_0252_Cf_n_PE_1110_WG"] <- ""
+# Remove unwanted samples **before merge**
+samples <- samples[!(samples$group_id %in% ban_group), ]
+scores  <- scores[ !(scores$group_id %in% ban_group), ]
 
-# remove 2 CHARMQ samples that we couldn't verify germline mutation
-data <- data[!grepl("T-788-T0", data$group_id), ]
-data <- data[!grepl("T-207-T0", data$group_id), ]
+# Clean `TS` in both data frames
+samples$TS[samples$TS %in% ban_ts_wgs] <- NA
+scores$TS[scores$TS %in% ban_ts_wgs]   <- NA
 
-# remove cfMeDIP samples 
-data <- data[!grepl("LIB-04-0649-T0", data$group_id), ]
-data <- data[!grepl("LIB-04-0441-T1", data$group_id), ]
-data <- data[!grepl("LIB-04-0024-T2", data$group_id), ]
-data <- data[!grepl("LIB-04-0131-T0", data$group_id), ]
-```
+# --- Merge ---
+# If you want to KEEP all samples (and still bring in matching scores):
+data <- merge(samples, scores, by = c("group_id", "Library Name", "TS"), all.x = TRUE)
+
+# --- Check ---
+table(is.na(data$TS))        # see if any missing TS remain
+table(is.na(data$source))    # source should be NA only for unmatched rows
+
+``` 
+
 
 ```{r}
 sites <- c("OV", "BRCA", "PRAD", "LUAD", "BLCA", "LGG", "ACC", "CESC", "CHOL", "COAD", "ESCA", "GBM", "HNSC", 
@@ -150,6 +157,10 @@ valid_samples <- data[!is.na(data$`Library Name`) & data$`Library Name` != "", ]
 
 # Remove samples with months_to_positive == "UNK" or "pending"
 #valid_samples <- valid_samples[!valid_samples$months_to_positive %in% c("UNK", "pending"), ]
+```
+
+```{r}
+table(valid_samples$source)
 ```
 
 ```{r}
