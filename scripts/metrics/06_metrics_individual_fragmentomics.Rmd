@@ -90,8 +90,8 @@ scores$TS[scores$TS %in% ban_ts_wgs]   <- NA
 data <- merge(samples, scores, by = c("group_id", "Library Name", "TS"), all.x = TRUE)
 
 # --- Check ---
-table(is.na(data$TS))        # see if any missing TS remain
-table(is.na(data$source))    # source should be NA only for unmatched rows
+# table(is.na(data$TS))        # see if any missing TS remain
+# table(is.na(data$source))    # source should be NA only for unmatched rows
 
 ``` 
 
