@@ -16,7 +16,6 @@ knitr::opts_knit$set(root.dir = here::here())
 ```
 
 
-
 ```{r}
 outdir <- here::here("data", "statistics")
 date <- Sys.Date();

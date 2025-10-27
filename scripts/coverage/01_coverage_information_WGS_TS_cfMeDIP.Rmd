@@ -4,12 +4,6 @@ output: html_document
 date: "2025-05-15"
 ---
 
-```{r setup, include=FALSE}
-# set the working directory
-knitr::opts_knit$set(root.dir = "/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/EarlyDetectionHBOC")
-```
-
-
 ```{r}
 library(dplyr)
 library(matrixStats)
@@ -23,11 +17,16 @@ library(lubridate)
 library(tidyr)
 ```
 
+```{r setup, include=FALSE}
+# set the working directory
+knitr::opts_knit$set(root.dir = here::here())
+```
+
 ```{r}
-outdir <- "./data/coverage"
+outdir <- here::here("data", "coverage")
 
 # Load data
-metadata_path <- "/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/HBOC_cohort_metadata.xlsx"
+metadata_path <- here::here("raw_data", "cohort", "HBOC_cohort_metadata.xlsx")
 samples <- read_excel(metadata_path, sheet = "April22")
 
 # Initial filtering
@@ -52,9 +51,9 @@ samples <- samples[!grepl("T-788-T0", samples$group_id), ]
 samples <- samples[!grepl("T-207-T0", samples$group_id), ]
 
 # Read coverage data
-TS_coverage <- read.csv("./raw_data/coverage/TS_coverage_summary_May27.csv", check.names = FALSE)
-WGS_coverage <- read.csv("./raw_data/coverage/WGS_coverage_summary_May28.csv", check.names = FALSE)
-cfMeDIP_coverage <- read.delim("./raw_data/coverage/cfMeDIP_aligned_reads.tsv", sep="\t")
+TS_coverage <- read.csv(here::here("raw_data", "coverage", "TS_coverage_summary_May27.csv"), check.names = FALSE)
+WGS_coverage <- read.csv(here::here("raw_data", "coverage", "WGS_coverage_summary_May28.csv"), check.names = FALSE)
+cfMeDIP_coverage <- read.delim(here::here("raw_data", "coverage", "cfMeDIP_aligned_reads.tsv"), sep="\t")
 
 # TS_coverage <- read.csv("./raw_data/coverage/TS_coverage_summary_V2.csv", check.names = FALSE)
 # WGS_coverage <- read.csv("./raw_data/coverage/WGS_coverage_summary_V2.csv", check.names = FALSE)

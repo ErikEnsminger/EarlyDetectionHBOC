@@ -1,40 +1,42 @@
 ---
-title: "10_processing_statistics_final_scoring_analysis"
+title: "01_metrics_DNA_extraction_HBOC_samples"
 output: html_document
 date: "2025-03-20"
 ---
-
-```{r setup, include=FALSE}
-# set the working directory
-knitr::opts_knit$set(root.dir = "/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/EarlyDetectionHBOC")
-```
-
 
 ```{r}
 library(dplyr)
 library(readxl)
 ```
 
+```{r setup, include=FALSE}
+# set the working directory
+knitr::opts_knit$set(root.dir = here::here())
+```
+
+
+
+
 ```{r}
 # outdir <- "./figures"
-outdir <- "./data/DNA_extraction"
+outdir <- here::here("data", "DNA_extraction")
 
 # read in data 
-scores_path <- "./data/statistics/04_processing_statistics_integrated_cancer_scores_2025-05-26.csv"
+scores_path <- here::here("data", "statistics", "02_processing_statistics_integrated_cancer_scores.csv")
 scores <- read.csv(scores_path, header=TRUE, check.names=FALSE)
 
-scores_normal_path <- "./data/statistics/03_statistics_control_scores_2025-05-20.csv"
+scores_normal_path <- here::here("data", "statistics", "01_statistics_control_scores.csv")
 scores_normal <- read.csv(scores_normal_path, header=TRUE, check.names=FALSE)
 scores_normal <- scores_normal[, c("Sample")]
 
-samples <- read_excel("/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/HBOC_cohort_metadata.xlsx", sheet="April22")
+samples <- read_excel(here::here("raw_data", "cohort", "HBOC_cohort_metadata.xlsx"), sheet="April22")
 samples <- samples[!grepl("-B|-Tumour", samples$group_id), ]
 
 samples <- samples[!grepl("T-788-T0", samples$group_id), ]
 samples <- samples[!grepl("T-207-T0", samples$group_id), ]
 
 
-DNA_ext_path <- "./raw_data/DNA_extraction/DNA_extraction_HBOC_and_Healthy.xlsx"
+DNA_ext_path <- here::here("raw_data", "DNA_extraction", "DNA_extraction_HBOC_and_Healthy.xlsx")
 DNA_ext <- read_excel(DNA_ext_path, sheet="HBOC")
 
 #CHARM_sample_tracker_path <- "./raw_data/DNA_extraction/Healthy_control_DNA_extraction.xlsx"

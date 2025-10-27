@@ -386,6 +386,36 @@ rmarkdown::render(
   output_file = here::here("HTML", "03_figure_cfMeDIP_barplots_by_cancer_status_w_methylation.html"),
   clean       = TRUE
 )
+
+# ==========================
+# Coverage
+# ==========================
+
+# 01_coverage_information_WGS_TS_cfMeDIP.Rmd
+rmarkdown::render(
+  input       = here::here("scripts", "coverage", "01_coverage_information_WGS_TS_cfMeDIP.Rmd"),
+  output_file = here::here("HTML", "01_coverage_information_WGS_TS_cfMeDIP.html"),
+  clean       = TRUE
+)
+
+# ==========================
+# DNA_extraction
+# ==========================
+
+# 01_metrics_DNA_extraction_HBOC_samples.Rmd
+rmarkdown::render(
+  input       = here::here("scripts", "DNA_extraction", "01_metrics_DNA_extraction_HBOC_samples.Rmd"),
+  output_file = here::here("HTML", "01_metrics_DNA_extraction_HBOC_samples.html"),
+  clean       = TRUE
+)
+
+# 02_metrics_DNA_extraction_control_samples.Rmd
+rmarkdown::render(
+  input       = here::here("scripts", "DNA_extraction", "02_metrics_DNA_extraction_control_samples.Rmd"),
+  output_file = here::here("HTML", "02_metrics_DNA_extraction_control_samples.html"),
+  clean       = TRUE
+)
+
 # =======================================================
 # Completion
 # =======================================================

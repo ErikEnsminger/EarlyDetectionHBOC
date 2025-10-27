@@ -1,14 +1,8 @@
 ---
-title: "10_processing_statistics_final_scoring_analysis"
+title: "02_metrics_DNA_extraction_control_samples"
 output: html_document
 date: "2025-03-20"
 ---
-
-```{r setup, include=FALSE}
-# set the working directory
-knitr::opts_knit$set(root.dir = "/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/EarlyDetectionHBOC")
-```
-
 
 ```{r}
 library(tidyverse)
@@ -23,24 +17,29 @@ library(data.table)
 library(readxl)
 ```
 
+```{r setup, include=FALSE}
+# set the working directory
+knitr::opts_knit$set(root.dir = here::here())
+```
+
 ```{r}
 # outdir <- "./figures"
-outdir <- "./data/metrics/DNA_extraction"
+outdir <- here::here("data", "DNA_extraction")
 
-scores_normal_path <- "./data/statistics/03_statistics_control_scores_2025-03-04.csv"
+scores_normal_path <- here::here("data", "statistics", "01_statistics_control_scores.csv")
 scores_normal <- read.csv(scores_normal_path, header=TRUE, check.names=FALSE)
 scores_normal <- scores_normal$Sample
 
-DNA_ext_path <- "./raw_data/DNA_extraction/Erik-Yield-Request-2025-02-28.xlsx"
+DNA_ext_path <- here::here("raw_data", "DNA_extraction", "Erik-Yield-Request-2025-02-28.xlsx")
 DNA_ext <- read_excel(DNA_ext_path)
 
-HCC_healthy_path <- "./raw_data/DNA_extraction/Healthy Controls Processing Log.xlsx"
+HCC_healthy_path <- here::here("raw_data", "DNA_extraction", "Healthy Controls Processing Log.xlsx")
 HCC_healthy_ext <- read_excel(HCC_healthy_path, sheet="cfDNA")
 
-CHARM_sample_ext_path <- "./raw_data/DNA_extraction/HBC_Processing Log.xlsx"
+CHARM_sample_ext_path <- here::here("raw_data", "DNA_extraction", "HBC_Processing Log.xlsx")
 CHARM_sample_ext <- read_excel(CHARM_sample_ext_path, sheet="cfDNA")
 
-CHARM_sample_tracker_path <- "./raw_data/DNA_extraction/CHARM Sample Tracker.xlsx"
+CHARM_sample_tracker_path <- here::here("raw_data", "DNA_extraction", "CHARM Sample Tracker.xlsx")
 CHARM_sample_tracker <- read_excel(CHARM_sample_tracker_path, sheet="HBC")
 CHARM_sample_tracker <- CHARM_sample_tracker[, c("sWGS", "LIB_ID", "timepoint")]
 ```
@@ -81,9 +80,13 @@ HCC_healthy_ext_subset <- HCC_healthy_ext[HCC_healthy_ext$`#` %in% scores_normal
 ```
 
 ```{r}
-# Export HCC_healthy_ext_subset
-write.csv(HCC_healthy_ext_subset, "/Users/erikensminger/Desktop/HCC_healthy_ext_subset.csv", row.names = FALSE)
 
+HCC_path <- file.path(outdir, "HCC_healthy_ext_subset.csv")
+
+# Export HCC_healthy_ext_subset
+write.csv(HCC_healthy_ext_subset, HCC_path, row.names = FALSE)
+
+CHARM_path <- file.path(outdir, "CHARM_sample_tracker_filtered.csv")
 # Export CHARM_sample_tracker
-write.csv(CHARM_sample_tracker, "/Users/erikensminger/Desktop/CHARM_sample_tracker_filtered.csv", row.names = FALSE)
+write.csv(CHARM_sample_tracker, CHARM_path, row.names = FALSE)
 ```
