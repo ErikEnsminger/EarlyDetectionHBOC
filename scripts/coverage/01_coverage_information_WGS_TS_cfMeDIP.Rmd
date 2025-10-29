@@ -63,14 +63,14 @@ WGS_coverage$WGS <- gsub("(_downsampled|_downsample)$", "", WGS_coverage$WGS)
 ```{r}
 # Merge TS coverage
 samples <- left_join(samples, TS_coverage, by = c("TS" = "TS")) %>% 
-  rename(TS_coverage = coverage)
+  dplyr::rename(TS_coverage = coverage)
 
 # Merge WGS coverage
 samples <- left_join(samples, WGS_coverage, by = c("Library Name" = "WGS")) %>%
-  rename(WGS_coverage = coverage)
+  dplyr::rename(WGS_coverage = coverage)
 
 samples <- left_join(samples, cfMeDIP_coverage, by = c("cfMeDIP" = "samplename")) %>%
-  rename(cfMeDIP_total_reads = Successfully.aligned.reads)
+  dplyr::rename(cfMeDIP_total_reads = Successfully.aligned.reads)
 
 # Identify missing TS and WGS coverage
 missing_TS <- samples[is.na(samples$TS_coverage) & !is.na(samples$TS), c("group_id", "TS")]
@@ -85,7 +85,7 @@ cat("Missing cfMeDIP coverage for", nrow(missing_cfMeDIP), "samples\n")
 
 # Preview merged data
 merged_data <- samples %>% 
-  select(group_id, timepoint, `Library Name`, TS, cfMeDIP, WGS_coverage, TS_coverage, cfMeDIP_total_reads)
+  dplyr::select(group_id, timepoint, `Library Name`, TS, cfMeDIP, WGS_coverage, TS_coverage, cfMeDIP_total_reads)
 ```
 
 ```{r}

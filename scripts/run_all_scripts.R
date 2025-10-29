@@ -10,6 +10,50 @@ cat("\n========================================\n")
 cat("       HBOC Figure Generation Pipeline\n")
 cat("========================================\n\n")
 
+# List of directories you want to ensure exist
+dirs <- c(
+  "data",
+  "figures",
+  "HTML",
+  # add subfolders if you want them auto-created too
+  "data/cfMeDIP",
+  "data/classifier",
+  "data/cohort",
+  "data/coverage",
+  "data/DNA_extraction",
+  "data/fragment_length",
+  "data/fragment_ratio",
+  "data/griffin",
+  "data/HBOC_pipeline_output",
+  "data/ichorCNA",
+  "data/longitudinal",
+  "data/metrics",
+  "data/mutations",
+  "data/nucleosome_peaks",
+  "data/statistics",
+  "figures/cfMeDIP",
+  "figures/classifier",
+  "figures/cohort",
+  "figures/fragment_length",
+  "figures/fragment_ratio",
+  "figures/griffin",
+  "figures/ichorCNA",
+  "figures/longitudinal",
+  "figures/metrics",
+  "figures/mutations",
+  "figures/nucleosome_peaks",
+  "figures/Statistics"
+)
+
+# Create them if they don’t exist
+for (d in dirs) {
+  full_path <- here::here(d)
+  if (!dir.exists(full_path)) {
+    dir.create(full_path, recursive = TRUE)
+    message("Created: ", full_path)
+  }
+}
+
 # Create HTML output directory if it doesn't exist
 html_dir <- here::here("HTML")
 if (!dir.exists(html_dir)) dir.create(html_dir, recursive = TRUE)
