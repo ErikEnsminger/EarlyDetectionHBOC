@@ -1,3 +1,10 @@
+---
+title: "02_figure_fragment_ratio_heatmap_to_publish"
+output: html_document
+date: "`r Sys.Date()`"
+params: 
+  ichorCNA_estimate_table: "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv"
+---
 ```{r}
 library(dplyr)
 library(matrixStats)
@@ -46,7 +53,7 @@ samples <- here::here("raw_data", "cohort", "HBOC_cohort_metadata.xlsx")
 data_healthy <- here::here("data", "HBOC_pipeline_output", "control", "control_per5Mb_fragment_ratios.csv")
 data_ratio <- here::here("data", "HBOC_pipeline_output", "HBOC", "HBOC_per5Mb_fragment_ratios.csv")
 
-scores_path <- here::here("raw_data", "ichorCNA", "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv")
+scores_path <- here::here("raw_data", "ichorCNA", params$ichorCNA_estimate_table)
 scores <- read.delim(scores_path, sep = "\t")[, c("ID", "Tumour.Fraction")]
 
 scores_normal_path <- here::here("raw_data", "ichorCNA", "2025-02-28_ichorCNA_Healthy_Control_V3_ichorCNA_estimates.tsv")

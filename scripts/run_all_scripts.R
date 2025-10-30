@@ -66,7 +66,8 @@ cat("\n========== Mutations Oncoprint ==========\n")
 render(
   input       = here::here("scripts", "mutations", "02_figure_mutations_oncoplot_to_publish.Rmd"),
   output_file = here::here("HTML", "02_figure_mutations_oncoplot_to_publish.html"),
-  clean       = TRUE
+  clean       = TRUE,
+  params      = list(ichorCNA_estimate_table = "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv")
 )
 
 cat("\nMutation oncoprint generated.\n")
@@ -79,7 +80,8 @@ cat("\n========== ichorCNA Segmentation ==========\n")
 render(
   input       = here::here("scripts", "ichorCNA", "01_processing_ichorCNA_segs.Rmd"),
   output_file = here::here("HTML", "01_processing_ichorCNA_segs.html"),
-  clean       = TRUE
+  clean       = TRUE, 
+  params      = list(raw_data_input_dir = "ichorCNA_HBOC_Feb_28_raw_output")
 )
 
 cat("\nichorCNA segmentation processing completed.\n")
@@ -92,7 +94,8 @@ cat("\n========== Figure 1 ichorCNA ==========\n")
 render(
   input       = here::here("scripts", "ichorCNA", "02_figure_ichorCNA_correctedDepth_to_publish.Rmd"),
   output_file = here::here("HTML", "02_figure_ichorCNA_correctedDepth_to_publish.html"),
-  clean       = TRUE
+  clean       = TRUE,
+  params      = list(ichorCNA_estimate_table = "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv")
 )
 
 cat("\nFigure 1 ichorCNA generated.\n")
@@ -170,7 +173,8 @@ render(
 render(
   input       = here::here("scripts", "fragment_ratio", "02_figure_fragment_ratio_heatmap_to_publish.Rmd"),
   output_file = here::here("HTML", "02_figure_fragment_ratio_heatmap_to_publish.html"),
-  clean       = TRUE
+  clean       = TRUE,
+  params      = list(ichorCNA_estimate_table = "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv")
 )
 
 # 03 - Profiles with Box Plot to Publish
@@ -265,7 +269,8 @@ cat("Griffin processing pipeline completed successfully!\n")
 rmarkdown::render(
   input       = here::here("scripts", "statistics", "01_processing_statistics.Rmd"),
   output_file = here::here("HTML", "01_processing_statistics.html"),
-  clean       = TRUE
+  clean       = TRUE,
+  params      = list(ichorCNA_estimate_table = "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv")
 )
 
 # 02_processing_statistics_integrated_cancer_scores.Rmd

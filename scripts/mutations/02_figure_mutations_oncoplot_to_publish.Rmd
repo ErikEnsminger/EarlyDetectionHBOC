@@ -1,3 +1,11 @@
+---
+title: "02_figure_mutations_oncoplot_to_publish"
+output: html_document
+date: "`r Sys.Date()`"
+params: 
+  ichorCNA_estimate_table: "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv"
+---
+
 ### How to run this script. 
 1. First need to run mutect2 and haplotypecaller pipeline 
 2. Take the cbioportal.txt maf file that is created from the pipeline (now found in data/mutations)
@@ -36,7 +44,7 @@ onco <- read_excel(here::here("raw_data", "mutations", "HBOC_oncoplot_Oct2.xlsx"
 
 # Tumor fraction data
 tumour_fraction <- read.delim(
-  here::here("raw_data", "ichorCNA", "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv"),
+  here::here("raw_data", "ichorCNA", params$ichorCNA_estimate_table),
   sep = "\t"
 )
 tumour_fraction <- tumour_fraction[, c("ID", "Tumour.Fraction")]

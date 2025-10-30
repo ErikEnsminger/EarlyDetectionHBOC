@@ -2,9 +2,11 @@
 title: "figure_1_ichorCNA"
 output: html_document
 date: "`r Sys.Date()`"
+params: 
+  ichorCNA_estimate_table: "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv"
 ---
 
-```{r }
+```{r}
 library(dplyr)
 library(matrixStats)
 library(ComplexHeatmap)
@@ -39,12 +41,12 @@ if (!dir.exists(outdir_data)) dir.create(outdir_data, recursive = TRUE)
 mutations <- read_excel(here::here("./raw_data", "mutations", "HBOC_oncoplot_Oct2.xlsx"))
 mutations <- mutations[,c("TS", "BRCA1_somatic", "BRCA2_somatic", "vaf_BRCA1_somatic", "vaf_BRCA2_somatic", "TP53", "vaf_TP53", "PALB2", "vaf_PALB2")]
 
-ichorCNA <- read.delim(here::here("raw_data", "ichorCNA", "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv"))
+ichorCNA <- read.delim(here::here("raw_data", "ichorCNA", params$ichorCNA_estimate_table))
 
 ichorCNA <- ichorCNA[!grepl("CHARMQ_0788_Pl_T_PG_T-788", ichorCNA$ID), ]
 ichorCNA <- ichorCNA[!grepl("CHARMQ_0207_Pl_T_PG_T-207", ichorCNA$ID), ]
 
-segs <- read.delim(here::here("data", "ichorCNA", "01_processing_ichorCNA_HBOC_Feb28_2025_segs.txt"))
+segs <- read.delim(here::here("data", "ichorCNA", "01_processing_ichorCNA_HBOC_segs.txt"))
 colnames(segs) <- gsub("\\.", "-", colnames(segs))
 
 samples <- read_excel(here::here("raw_data", "cohort", "HBOC_cohort_metadata.xlsx"), sheet="April22")

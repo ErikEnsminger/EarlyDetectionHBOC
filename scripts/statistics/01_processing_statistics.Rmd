@@ -2,6 +2,8 @@
 title: "01_processing_statistics"
 output: html_document
 date: "`r Sys.Date()`"
+params: 
+  ichorCNA_estimate_table: "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv"
 ---
 
 ```{r}
@@ -36,7 +38,7 @@ oncoplot <- oncoplot[!(is.na(oncoplot$TS) & is.na(oncoplot$`Library Name`)), ]
 
 
 # ichorCNA path 
-ichorCNA_data_path <- here::here("raw_data", "ichorCNA", "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv")
+ichorCNA_data_path <- here::here("raw_data", "ichorCNA", params$ichorCNA_estimate_table)
 ichorCNA <- read.delim(ichorCNA_data_path, header = TRUE)
 ichorCNA <- ichorCNA[, c("ID","Tumour.Fraction")]
 

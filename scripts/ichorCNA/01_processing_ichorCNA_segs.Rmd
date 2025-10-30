@@ -2,6 +2,8 @@
 title: "01_processing_ichorCNA_segs"
 output: html_document
 date: "`r Sys.Date()`"
+params:
+  raw_data_input_dir: "ichorCNA_HBOC_Feb_28_raw_output" 
 ---
 
 ```{r}
@@ -19,13 +21,15 @@ knitr::opts_knit$set(root.dir = here::here())
 
 
 ```{r}
-paths <- here::here("raw_data", "ichorCNA", "ichorCNA_HBOC_Feb_28_raw_output")
+
+raw_data_input_dir <- params$raw_data_input_dir
+paths <- here::here("raw_data", "ichorCNA", raw_data_input_dir)
 
 # Project name
-project <- "01_processing_ichorCNA_HBOC_Feb28_2025"
+project <- "01_processing_ichorCNA_HBOC"
 
 # Output directory (local CloudStorage)
-outdir_segs <- here::here("data", "ichorCNA", "01_processing_ichorCNA_HBOC_Feb28_2025_segs")
+outdir_segs <- here::here("data", "ichorCNA", "01_processing_ichorCNA_HBOC_segs")
 outdir_combined <- here::here("data", "ichorCNA")
 
 # Create output directories if they don't exist
