@@ -357,7 +357,7 @@ plot_inset <- ggplot(data) +
     breaks = seq(100, 170, by = 10),  # Add ticks every 5 bp
     expand = c(0, 0)  # Remove padding
   ) +
-  scale_y_continuous(limits = c(0, 2.5), expand = c(0, 0))
+  scale_y_continuous(limits = c(0, 2.7), expand = c(0, 0))
 
 # Display the plot
 plot_inset

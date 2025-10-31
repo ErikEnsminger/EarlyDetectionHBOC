@@ -67,7 +67,7 @@ render(
   input       = here::here("scripts", "mutations", "02_figure_mutations_oncoplot_to_publish.Rmd"),
   output_file = here::here("HTML", "02_figure_mutations_oncoplot_to_publish.html"),
   clean       = TRUE,
-  params      = list(ichorCNA_estimate_table = "HBOC_ichorCNA_estimates.tsv")
+  params      = list(ichorCNA_estimate_table = "HBOC_ichorCNA_estimates.tsv", HBC_ichorCNA_estimate_table = "HBC_ichorCNA_estimates.tsv")
 )
 
 cat("\nMutation oncoprint generated.\n")

@@ -4,6 +4,7 @@ output: html_document
 date: "`r Sys.Date()`"
 params: 
   ichorCNA_estimate_table: "HBOC_ichorCNA_estimates.tsv"
+  HBC_ichorCNA_estimate_table: "HBC_ichorCNA_estimates.tsv"
 ---
 
 ```{r}
@@ -42,9 +43,11 @@ mutations <- read_excel(here::here("./raw_data", "mutations", "HBOC_oncoplot_Oct
 mutations <- mutations[,c("TS", "BRCA1_somatic", "BRCA2_somatic", "vaf_BRCA1_somatic", "vaf_BRCA2_somatic", "TP53", "vaf_TP53", "PALB2", "vaf_PALB2")]
 
 ichorCNA <- read.delim(here::here("raw_data", "ichorCNA", params$ichorCNA_estimate_table))
-
 ichorCNA <- ichorCNA[!grepl("CHARMQ_0788_Pl_T_PG_T-788", ichorCNA$ID), ]
 ichorCNA <- ichorCNA[!grepl("CHARMQ_0207_Pl_T_PG_T-207", ichorCNA$ID), ]
+
+HBC_ichorCNA <- read.delim(here::here("raw_data", "ichorCNA", params$HBC_ichorCNA_estimate_table))
+tumour_fraction_cutoff <- quantile(HBC_ichorCNA$Tumour.Fraction , 0.99, na.rm = TRUE)
 
 segs <- read.delim(here::here("data", "ichorCNA", "01_processing_ichorCNA_HBOC_segs.txt"))
 colnames(segs) <- gsub("\\.", "-", colnames(segs))
@@ -235,7 +238,7 @@ row.names(data_mutation) <- row.names(ichorCNA)
 ### Make ichorCNA table and apphend mutation information
 data_ichorCNA <- as.matrix(ichorCNA$ichorCNA)
 row.names(data_ichorCNA) <- ichorCNA$sample
-data_ichorCNA <- cbind(data_ichorCNA, c(rep(4.87, nrow(data_ichorCNA))))
+data_ichorCNA <- cbind(data_ichorCNA, c(rep((100*tumour_fraction_cutoff), nrow(data_ichorCNA))))
 
 mutations <- merge(mutations[,c("sample_ID", "vaf")], ichorCNA[, c("TS", "sample")], by.x = "sample_ID", by.y = "TS", all = TRUE)
 mutations <- mutations[!(is.na(mutations$sample)), c("vaf", "sample")]
