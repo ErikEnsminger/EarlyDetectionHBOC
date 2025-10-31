@@ -40,7 +40,7 @@ if (which_project == "control") {
   
   # Use organized outputs instead of raw file list
   organized_dir <- 
-    here::here("raw_data", "HBOC_pipeline_output", "20250129_HBC_CHARM_and_HCC_organized_outputs")
+    here::here("raw_data", "HBOC_pipeline_output", "HBC_organized_outputs")
   
   # List all files in organized outputs
   all_files <- list.files(organized_dir, recursive = TRUE, full.names = TRUE)
@@ -52,7 +52,7 @@ if (which_project == "control") {
   
   # Use organized outputs instead of raw file list
   organized_dir <- here::here(
-    "raw_data", "HBOC_pipeline_output", "frag_pipeline_Oct9_organized_outputs"
+    "raw_data", "HBOC_pipeline_output", "HBOC_organized_outputs"
   )
   
   # List all files in organized outputs

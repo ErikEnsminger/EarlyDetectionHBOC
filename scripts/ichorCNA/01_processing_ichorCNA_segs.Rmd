@@ -3,7 +3,7 @@ title: "01_processing_ichorCNA_segs"
 output: html_document
 date: "`r Sys.Date()`"
 params:
-  raw_data_input_dir: "ichorCNA_HBOC_Feb_28_raw_output" 
+  raw_data_input_dir: "HBOC_ichorCNA" 
 ---
 
 ```{r}
@@ -21,7 +21,6 @@ knitr::opts_knit$set(root.dir = here::here())
 
 
 ```{r}
-
 raw_data_input_dir <- params$raw_data_input_dir
 paths <- here::here("raw_data", "ichorCNA", raw_data_input_dir)
 

@@ -33,9 +33,9 @@ data_samples$cancer_type[data_samples$cancer_type == "thyroid, hgsoc"] <- "ovari
 # ==========================
 # Load RDS Data
 # ==========================
-path <- here::here("raw_data", "griffin","2024-10-14_HBOC_fragmentomics_Oct9_nucleosome_accessibility_distances.rds")
+path <- here::here("raw_data", "griffin","nucleosome_accessibility_HBOC.rds")
 
-healthy_path <- here::here("raw_data", "griffin","2024-11-26_HBC_fragmentomics_OICR_PMGC_and_2025-01-23_HCC_Healthy_fragmentomics_nucleosome_accessibility_distances.rds")
+healthy_path <- here::here("raw_data", "griffin","nucleosome_accessibility_HBC.rds")
 
 # Read data objects
 data_V1 <- readRDS(path)

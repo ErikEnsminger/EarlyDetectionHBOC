@@ -410,5 +410,5 @@ oncoPrint <- oncoPrint(
 )
 
 draw(oncoPrint, heatmap_legend_list = annotation_legend, show_annotation_legend = FALSE, heatmap_legend_side = "bottom")
-
+dev.off()
 ```

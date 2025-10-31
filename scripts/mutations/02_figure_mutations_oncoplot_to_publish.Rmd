@@ -3,7 +3,7 @@ title: "02_figure_mutations_oncoplot_to_publish"
 output: html_document
 date: "`r Sys.Date()`"
 params: 
-  ichorCNA_estimate_table: "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv"
+  ichorCNA_estimate_table: "HBOC_ichorCNA_estimates.tsv"
 ---
 
 ### How to run this script. 

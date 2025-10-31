@@ -67,7 +67,7 @@ render(
   input       = here::here("scripts", "mutations", "02_figure_mutations_oncoplot_to_publish.Rmd"),
   output_file = here::here("HTML", "02_figure_mutations_oncoplot_to_publish.html"),
   clean       = TRUE,
-  params      = list(ichorCNA_estimate_table = "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv")
+  params      = list(ichorCNA_estimate_table = "HBOC_ichorCNA_estimates.tsv")
 )
 
 cat("\nMutation oncoprint generated.\n")
@@ -81,7 +81,7 @@ render(
   input       = here::here("scripts", "ichorCNA", "01_processing_ichorCNA_segs.Rmd"),
   output_file = here::here("HTML", "01_processing_ichorCNA_segs.html"),
   clean       = TRUE, 
-  params      = list(raw_data_input_dir = "ichorCNA_HBOC_Feb_28_raw_output")
+  params      = list(raw_data_input_dir = "HBOC_ichorCNA")
 )
 
 cat("\nichorCNA segmentation processing completed.\n")
@@ -95,7 +95,7 @@ render(
   input       = here::here("scripts", "ichorCNA", "02_figure_ichorCNA_correctedDepth_to_publish.Rmd"),
   output_file = here::here("HTML", "02_figure_ichorCNA_correctedDepth_to_publish.html"),
   clean       = TRUE,
-  params      = list(ichorCNA_estimate_table = "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv")
+  params      = list(ichorCNA_estimate_table = "HBOC_ichorCNA_estimates.tsv")
 )
 
 cat("\nFigure 1 ichorCNA generated.\n")
@@ -174,7 +174,7 @@ render(
   input       = here::here("scripts", "fragment_ratio", "02_figure_fragment_ratio_heatmap_to_publish.Rmd"),
   output_file = here::here("HTML", "02_figure_fragment_ratio_heatmap_to_publish.html"),
   clean       = TRUE,
-  params      = list(ichorCNA_estimate_table = "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv")
+  params      = list(ichorCNA_estimate_table = "HBOC_ichorCNA_estimates.tsv", HBC_ichorCNA_estimate_table = "HBC_ichorCNA_estimates.tsv")
 )
 
 # 03 - Profiles with Box Plot to Publish
@@ -220,7 +220,7 @@ process_griffin(
   analysis_name = "01_processing_griffin_HBOC",
   base_dir = here::here(
     "raw_data", "HBOC_pipeline_output", 
-    "frag_pipeline_Oct9_organized_outputs", "griffin"
+    "HBOC_organized_outputs", "griffin"
   )
 )
 
@@ -230,7 +230,7 @@ process_griffin(
   analysis_name = "01_processing_griffin_control",
   base_dir = here::here(
     "raw_data", "HBOC_pipeline_output", 
-    "20250129_HBC_CHARM_and_HCC_organized_outputs", "griffin"
+    "HBC_organized_outputs", "griffin"
   )
 )
 
@@ -270,7 +270,7 @@ rmarkdown::render(
   input       = here::here("scripts", "statistics", "01_processing_statistics.Rmd"),
   output_file = here::here("HTML", "01_processing_statistics.html"),
   clean       = TRUE,
-  params      = list(ichorCNA_estimate_table = "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv")
+  params      = list(ichorCNA_estimate_table = "HBOC_ichorCNA_estimates.tsv", HBC_ichorCNA_estimate_table = "HBC_ichorCNA_estimates.tsv")
 )
 
 # 02_processing_statistics_integrated_cancer_scores.Rmd

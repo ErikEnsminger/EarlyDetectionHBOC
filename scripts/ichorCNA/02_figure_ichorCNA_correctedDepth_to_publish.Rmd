@@ -3,7 +3,7 @@ title: "figure_1_ichorCNA"
 output: html_document
 date: "`r Sys.Date()`"
 params: 
-  ichorCNA_estimate_table: "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv"
+  ichorCNA_estimate_table: "HBOC_ichorCNA_estimates.tsv"
 ---
 
 ```{r}
@@ -467,6 +467,7 @@ Figure
 ```{r}
 pdf(file.path(outdir, "02_figure_ichorCNA_correctedDepth_heatmap_to_publish.pdf"), width = 10, height = 6)
 draw(Figure, heatmap_legend_list = annotation_legend, heatmap_legend_side = "bottom", show_annotation_legend = FALSE) 
+dev.off()  # ✅ Close the device
 ```
 
 

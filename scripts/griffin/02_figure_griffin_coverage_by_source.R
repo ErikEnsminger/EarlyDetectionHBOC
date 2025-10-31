@@ -27,10 +27,9 @@ data_samples <- data_samples[!grepl("CHARMQ_0788_Pl_T_PG_T-788", data_samples$`L
 data_samples <- data_samples[!grepl("CHARMQ_0207_Pl_T_PG_T-207", data_samples$`Library Name`), ]
 
 # R Objects option - since data is large
-path <- here::here("raw_data", "griffin", "2024-10-14_HBOC_fragmentomics_Oct9_nucleosome_accessibility_distances.rds")
+path <- here::here("raw_data", "griffin", "nucleosome_accessibility_HBOC.rds")
 
-# healthy_path <- here::here("raw_data", "griffin", "2025-01-23_HCC_Healthy_fragmentomics_nucleosome_accessibility_distances.rds")
-healthy_path <- here::here("raw_data", "griffin", "2024-11-26_HBC_fragmentomics_OICR_PMGC_and_2025-01-23_HCC_Healthy_fragmentomics_nucleosome_accessibility_distances.rds")
+healthy_path <- here::here("raw_data", "griffin", "nucleosome_accessibility_HBC.rds")
 
 # Read in R objects
 data_V1 <- readRDS(path)

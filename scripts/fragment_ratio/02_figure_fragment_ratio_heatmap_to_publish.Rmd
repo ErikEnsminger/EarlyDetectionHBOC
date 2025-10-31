@@ -3,8 +3,10 @@ title: "02_figure_fragment_ratio_heatmap_to_publish"
 output: html_document
 date: "`r Sys.Date()`"
 params: 
-  ichorCNA_estimate_table: "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv"
+  ichorCNA_estimate_table: "HBOC_ichorCNA_estimates.tsv"
+  HBC_ichorCNA_estimate_table: "HBC_ichorCNA_estimates.tsv"
 ---
+
 ```{r}
 library(dplyr)
 library(matrixStats)
@@ -56,7 +58,7 @@ data_ratio <- here::here("data", "HBOC_pipeline_output", "HBOC", "HBOC_per5Mb_fr
 scores_path <- here::here("raw_data", "ichorCNA", params$ichorCNA_estimate_table)
 scores <- read.delim(scores_path, sep = "\t")[, c("ID", "Tumour.Fraction")]
 
-scores_normal_path <- here::here("raw_data", "ichorCNA", "2025-02-28_ichorCNA_Healthy_Control_V3_ichorCNA_estimates.tsv")
+scores_normal_path <- here::here("raw_data", "ichorCNA", params$HBC_ichorCNA_estimate_table)
 scores_normal <- read.delim(scores_normal_path, sep = "\t")[, c("ID", "Tumour.Fraction")]
 
 mutations <- read_excel(here::here("raw_data", "mutations", "HBOC_oncoplot_Oct2.xlsx"))
@@ -216,7 +218,7 @@ samples[samples$cancer_status != "Healthy", mutation_cols] <- lapply(
 
 data_corr_df <- data.frame(
   TumourFraction  = samples$TumourFraction,
-  LOD_TF          = rep(4.87, nrow(samples)),
+  LOD_TF          = rep(6.65, nrow(samples)),
   BRCA1_somatic   = samples$BRCA1_somatic,
   BRCA2_somatic   = samples$BRCA2_somatic,
   TP53            = samples$TP53,
@@ -316,7 +318,7 @@ stopifnot(identical(rownames(data_corr_df), rownames(data_corr_matched)))
 
 # 2) Now assign
 data_corr_df$correlation <- as.numeric(data_corr_matched)
-data_corr_df$LOD         <- 0.767
+data_corr_df$LOD         <- 0.858
 ```
 
 ```{r}

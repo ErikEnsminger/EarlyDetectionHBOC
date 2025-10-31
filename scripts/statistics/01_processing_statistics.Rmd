@@ -3,7 +3,8 @@ title: "01_processing_statistics"
 output: html_document
 date: "`r Sys.Date()`"
 params: 
-  ichorCNA_estimate_table: "2025-02-28_ichorCNA_HBOC_Feb28_2025_ichorCNA_estimates.tsv"
+  ichorCNA_estimate_table: "HBOC_ichorCNA_estimates.tsv"
+  HBC_ichorCNA_estimate_table: "HBC_ichorCNA_estimates.tsv"
 ---
 
 ```{r}
@@ -79,7 +80,7 @@ fragment_ratio_corr_healthy_path <- here::here("data", "fragment_ratio", "02_fra
 fragment_ratio_corr_healthy <- read.delim(fragment_ratio_corr_healthy_path, header = TRUE, check.names=FALSE)
 colnames(fragment_ratio_corr_healthy )[colnames(fragment_ratio_corr_healthy) == "correlation"] <- "fragment_ratio_corr"
 
-ichorCNA_normal_path <- here::here("raw_data", "ichorCNA", "2025-02-28_ichorCNA_Healthy_Control_V3_ichorCNA_estimates.tsv")
+ichorCNA_normal_path <- here::here("raw_data", "ichorCNA", params$HBC_ichorCNA_estimate_table)
 ichorCNA_normal <- read.delim(ichorCNA_normal_path, header=TRUE)
 ichorCNA_normal <- ichorCNA_normal[, c("ID","Tumour.Fraction")]
 ```
