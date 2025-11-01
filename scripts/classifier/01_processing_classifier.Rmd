@@ -84,7 +84,7 @@ samples <- samples[!samples$TS %in% c("LIB-04-0154-T0", "LIB-04-0376-T2", "LIB-0
 
 # add the mutation vafs. 
 ```{r}
-mutation_vafs <- read_excel("./raw_data/mutations/HBOC_oncoplot_Oct2.xlsx")
+mutation_vafs <- read_excel(here::here("raw_data", "mutations", "HBOC_oncoplot_Oct2.xlsx"))
 mutation_vafs <- mutation_vafs[, c("group_id", "vaf_BRCA1_somatic", "vaf_BRCA2_somatic", "vaf_TP53", "vaf_PALB2")]
 
 mutation_vafs$mutation_vaf <- apply(mutation_vafs[, c("vaf_BRCA1_somatic", "vaf_BRCA2_somatic", "vaf_TP53", "vaf_PALB2")], 1, function(x) {
