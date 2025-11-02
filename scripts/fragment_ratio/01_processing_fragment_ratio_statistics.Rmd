@@ -44,8 +44,8 @@ data_ratio <- data_ratio[, !colnames(data_ratio) %in% c("CHARMQ_0788_Pl_T_PG_T-7
 
 ```{r}
 # Remove noise location
-data_ratio <- data_ratio[!(data_ratio$seqnames == "chr6" & data_ratio$start == "30100000"),]
-data_normal <- data_normal[!(data_normal$seqnames == "chr6" & data_normal$start == "30100000"),]
+# data_ratio <- data_ratio[!(data_ratio$seqnames == "chr6" & data_ratio$start == "30100000"),]
+# data_normal <- data_normal[!(data_normal$seqnames == "chr6" & data_normal$start == "30100000"),]
 
 # Format columns
 colnames(samples)[colnames(samples) == "Library Name"] <- "sWGS"
@@ -113,7 +113,6 @@ z_score_negative <- rowMedians(as.matrix(data_change_negative), na.rm = TRUE)
 ```
 
 ```{r}
-# Merge results into the differential table
 # Merge results into the differential table
 de_table <- data.frame(
   location = vars,

@@ -186,22 +186,22 @@ segs <- t(segs)
 ```
 
 ```{r}
-# Calculate the proportion of values > 3, ignoring NA
-prop_above_1 <- colMeans(segs > .10, na.rm = TRUE)
-# Identify columns where at least 95% are > 3
-cols_to_remove <- names(prop_above_1[prop_above_1 >= 0.75 & !is.na(prop_above_1)])
-# Print columns to remove
-print(cols_to_remove)
-# Remove them
-segs <- segs[, !(colnames(segs) %in% cols_to_remove)]
-
-
-# Extract the regions without the "chr" prefix to match the first column of chr
-chr_regions_to_remove <- gsub("chr", "", cols_to_remove)
-# Remove rows from chr where the rownames match the removed columns
-chr <- chr[!(rownames(chr) %in% chr_regions_to_remove), ]
-# Check result
-print(chr)
+# # Calculate the proportion of values > 3, ignoring NA
+# prop_above_1 <- colMeans(segs > .10, na.rm = TRUE)
+# # Identify columns where at least 95% are > 3
+# cols_to_remove <- names(prop_above_1[prop_above_1 >= 0.75 & !is.na(prop_above_1)])
+# # Print columns to remove
+# print(cols_to_remove)
+# # Remove them
+# segs <- segs[, !(colnames(segs) %in% cols_to_remove)]
+# 
+# 
+# # Extract the regions without the "chr" prefix to match the first column of chr
+# chr_regions_to_remove <- gsub("chr", "", cols_to_remove)
+# # Remove rows from chr where the rownames match the removed columns
+# chr <- chr[!(rownames(chr) %in% chr_regions_to_remove), ]
+# # Check result
+# print(chr)
 ```
 
 ```{r}

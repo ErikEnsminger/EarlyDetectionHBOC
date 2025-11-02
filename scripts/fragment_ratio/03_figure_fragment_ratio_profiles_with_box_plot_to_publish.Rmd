@@ -57,8 +57,8 @@ data_ratio <- data_ratio[, !colnames(data_ratio) %in% c("CHARMQ_0788_Pl_T_PG_T-7
 data_normal <- read.csv(data_normal, header=TRUE)
 
 # remove the fragment ratio chromosome location that seems to be noise 
-data_ratio <- data_ratio[!(data_ratio$seqnames == "chr6" & data_ratio$start == "30100000"),]
-data_normal <- data_normal[!(data_normal$seqnames == "chr6" & data_normal$start == "30100000"),]
+#data_ratio <- data_ratio[!(data_ratio$seqnames == "chr6" & data_ratio$start == "30100000"),]
+# data_normal <- data_normal[!(data_normal$seqnames == "chr6" & data_normal$start == "30100000"),]
 ```
 
 ```{r}
