@@ -179,7 +179,6 @@ healthy_brca12m_carriers$roc_label <- 1
 healthy_carriers_vs_control <- rbind(control_scores_cohort, healthy_brca12m_carriers)
 
 healthy_carriers_vs_control$Tumour.Fraction <- log1p(healthy_carriers_vs_control$Tumour.Fraction)
-# healthy_carriers_vs_control$consensus_griffin <- log1p(healthy_carriers_vs_control$consensus_griffin)
 healthy_carriers_vs_control$fragment_ratio_corr <- -log1p(1 - healthy_carriers_vs_control$fragment_ratio_corr)
 healthy_carriers_vs_control$Mutation <- factor(healthy_carriers_vs_control$Mutation, levels = c(0, 1))
 
@@ -229,16 +228,13 @@ brca_carriers_positive_vs_negative <- brca_carriers_positive_vs_negative %>%
 combined_negative <- rbind(negative_subset, brca_carriers_negative_with_future_cancer)
 
 combined_negative$Tumour.Fraction <- log1p(combined_negative$Tumour.Fraction)
-# combined_negative$consensus_griffin <- log1p(combined_negative$consensus_griffin)
 combined_negative$fragment_ratio_corr <- -log1p(1 - combined_negative$fragment_ratio_corr)
 combined_negative$Mutation <- factor(combined_negative$Mutation, levels = c(0, 1))
 table(combined_negative$roc_label)
 
 brca_carriers_positive_vs_negative$Tumour.Fraction <- log1p(brca_carriers_positive_vs_negative$Tumour.Fraction)
-# brca_carriers_positive_vs_negative$consensus_griffin <- log1p(brca_carriers_positive_vs_negative$consensus_griffin)
 brca_carriers_positive_vs_negative$fragment_ratio_corr <- -log1p(1 - brca_carriers_positive_vs_negative$fragment_ratio_corr)
 brca_carriers_positive_vs_negative$Mutation <- factor(brca_carriers_positive_vs_negative$Mutation, levels = c(0, 1))
-
 table(brca_carriers_positive_vs_negative$roc_label) 
 ```
 
@@ -300,6 +296,8 @@ eval_results <- evaluate_median_models(
 
 # Combine all confusion plots into one PDF
 combine_confusion_plots(eval_results, filename = "01_classifier_combined_confusion_matrix.pdf", outdir_figures = outdir_figures)
+
+combined_negative <- combined_negative[, c(features, "roc_label")]
 
 plot_roc_curves_from_results(
   results_list    = eval_results,
@@ -364,8 +362,6 @@ roc_brca_positive_vs_negative <- plot_roc_curve(
 # Save Combined ROC Plots as  PDF
 ggsave(filename = file.path(outdir_figures, "01_processing_classifier_healthy_vs_control_ROC.pdf"), 
        plot = roc_healthy_vs_control, width = 7, height = 6)
-
-
 
 ggsave(filename = file.path(outdir_figures, "01_processing_classifier_brca_positive_vs_negative_ROC.pdf"), 
        plot = roc_brca_positive_vs_negative, width = 7, height = 6)

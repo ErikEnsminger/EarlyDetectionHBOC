@@ -149,7 +149,6 @@ filtered_data <- filtered_data[!filtered_data$group_id %in% samples_to_exclude, 
 
 ```{r}
 filtered_data$Tumour.Fraction <- log1p(filtered_data$Tumour.Fraction)
-filtered_data$FS <- log1p(filtered_data$FS)
 filtered_data$fragment_ratio_corr <- -log1p(1 - filtered_data$fragment_ratio_corr)
 
 # Assign ROC labels
