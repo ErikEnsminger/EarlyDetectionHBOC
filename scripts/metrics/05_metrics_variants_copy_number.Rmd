@@ -127,13 +127,7 @@ data$Mutation_gene[is.na(data$Mutation_gene)] <- ""
 ```
 
 ```{r}
-nucleosome_peak_cutoff <- quantile(scores_normal$avg_zscore_nuc_peaks, 0.99, na.rm = TRUE)
 tumour_fraction_cutoff <- quantile(scores_normal$Tumour.Fraction , 0.99, na.rm = TRUE)
-fragment_ratio_cutoff <- quantile(scores_normal$fragment_ratio_corr , 0.01, na.rm = TRUE)
-fragment_length_cutoff <- quantile(scores_normal$FS , 0.99, na.rm = TRUE)
-# consensus_griffin_cutoff <- 1 
-consensus_griffin_cutoff <- quantile(scores_normal$consensus_griffin, 0.01, na.rm = TRUE)
-integrated_ctDNA_score_cutoff <- 0.5 
 ```
 
 # Germline Analysis
@@ -461,9 +455,6 @@ for (i in seq_len(nrow(followup_neg_summary))) {
 
 ### Mutation and Tumour Fraction Integrated. 
 ```{r}
-library(dplyr)
-library(tidyr)
-
 # 1. Samples with both TS and WGS
 both_data <- data %>%
   dplyr::filter(!is.na(TS), TS != "", !is.na(`Library Name`), `Library Name` != "")
@@ -521,30 +512,39 @@ cat("- Detection rate (samples):", round(n_detected_samples / n_both_samples * 1
 cat("- Detection rate (patients):", round(n_detected_patients / n_both_patients * 100, 1), "%\n")
 
 # 6. Detection summary by source
-detection_by_source <- both_detected %>%
-  group_by(source, detection_category) %>%
-  dplyr::summarise(n = n(), .groups = "drop") %>%
-  pivot_wider(names_from = detection_category, values_from = n, values_fill = 0) %>%
-  left_join(
-    both_detected %>%
-      group_by(source) %>%
-      dplyr::summarise(
-        n_samples = n(),
-        n_patients = n_distinct(LIB_ID),
-        n_detected_patients = n_distinct(LIB_ID[detection_category != "none"]),
-        .groups = "drop"
-      ),
-    by = "source"
-  ) %>%
-  mutate(
-    detection_rate_samples = round((coalesce(mutation_only, 0) +
-                                    coalesce(high_tf_only, 0) +
-                                    coalesce(both, 0)) / n_samples * 100, 1),
-    detection_rate_patients = round(n_detected_patients / n_patients * 100, 1)
-  )
+summarize_detection <- function(df, group_var) {
+  df %>%
+    group_by({{ group_var }}, detection_category) %>%
+    dplyr::summarise(n = n(), .groups = "drop") %>%
+    tidyr::pivot_wider(names_from = detection_category, values_from = n, values_fill = 0) %>%
+    left_join(
+      df %>%
+        group_by({{ group_var }}) %>%
+        dplyr::summarise(
+          n_samples = n(),
+          n_patients = n_distinct(LIB_ID),
+          n_detected_patients = n_distinct(LIB_ID[detection_category != "none"]),
+          .groups = "drop"
+        ),
+      by = rlang::as_name(rlang::ensym(group_var))
+    ) %>%
+    mutate(
+      detection_rate_samples = round((coalesce(mutation_only, 0) +
+                                      coalesce(high_tf_only, 0) +
+                                      coalesce(both, 0)) / n_samples * 100, 1),
+      detection_rate_patients = round(n_detected_patients / n_patients * 100, 1)
+    )
+}
 
+# --- Apply for source ---
 cat("\nDetection summary by source:\n")
+detection_by_source <- summarize_detection(both_detected, source)
 print(detection_by_source)
+
+# --- Apply for cancer_status ---
+cat("\nDetection summary by cancer_status:\n")
+detection_by_status <- summarize_detection(both_detected, cancer_status)
+print(detection_by_status)
 ```
 
 ```{r}
