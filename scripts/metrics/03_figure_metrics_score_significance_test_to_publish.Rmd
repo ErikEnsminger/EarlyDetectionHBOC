@@ -29,7 +29,6 @@ knitr::opts_knit$set(root.dir = here::here())
 
 
 ```{r}
-# outdir <- "./figures"
 outdir_figures <- "./figures/metrics/03_metrics_score_boxplots"
 if (!dir.exists(outdir_figures)) dir.create(outdir_figures, recursive = TRUE)
 
@@ -70,30 +69,6 @@ samples <- samples[!(is.na(samples$`Library Name`) | samples$`Library Name` == "
 ```{r}
 samples <- samples[, c("Library Name", "TS", "source")]
 data <- merge(samples, scores, by.x = c("Library Name", "TS"), by.y = c("Library Name", "TS"), all.y = TRUE)
-```
-
-
-# Process griffin scores to combine to one column 
-```{r}
-# Get the raw z-score columns
-zscore_cols <- grep("^AverageZScore_", colnames(data), value = TRUE)
-
-# Create cumulative z-score column by summing raw z-scores row-wise
-data$consensus_griffin <- rowSums(data[, zscore_cols], na.rm = TRUE)
-```
-
-```{r}
-# Identify z-score columns in scores_normal
-zscore_cols <- grep("^AverageZScore_", colnames(control_scores), value = TRUE)
-
-# Calculate cumulative z-score for each normal sample
-control_scores$consensus_griffin  <- rowSums(control_scores[, zscore_cols], na.rm = TRUE)
-```
-
-# remove z-score columns
-```{r}
-control_scores <- control_scores[, !grepl("^AverageZScore_", colnames(control_scores))]
-data <- data[, !grepl("^AverageZScore_", colnames(data))]
 ```
 
 ```{r}

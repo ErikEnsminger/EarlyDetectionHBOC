@@ -89,22 +89,31 @@ ichorCNA_normal <- ichorCNA_normal[, c("ID","Tumour.Fraction")]
 ```{r}
 # Rename 'Patient' to 'Sample' in normal_griffin_breast and normal_griffin_ovarian
 colnames(normal_griffin_all)[colnames(normal_griffin_all) == "Patient"] <- "Sample"
-
-colnames(fragment_ratio_corr_healthy)[colnames(fragment_ratio_corr_healthy) == "sample"] <- "Sample"  # Standardize naming
-
-
 # Drop unnecessary columns before merging
 normal_griffin_all <- normal_griffin_all[, !grepl("^MeanDifference", colnames(normal_griffin_all))]
 
+# Get the raw z-score columns
+zscore_cols_normal <- grep("^AverageZScore_", colnames(normal_griffin_all), value = TRUE)
+
+# Create cumulative z-score column by summing raw z-scores row-wise
+normal_griffin_all$consensus_griffin <- rowSums(normal_griffin_all[, zscore_cols_normal], na.rm = TRUE)
+
+normal_griffin_all <- normal_griffin_all[, !(colnames(normal_griffin_all) %in% zscore_cols_normal)]
+```
+
+```{r}
 # Merge with FS_score_healthy
 merged_with_FS <- merge(normal_griffin_all, FS_score_healthy, by="Sample", all=TRUE)
 
 # Merge with nucleosome_peak_healthy
 final_merged_df <- merge(merged_with_FS, nucleosome_peak_healthy, by="Sample", all=TRUE)
+```
+
+```{r}
+colnames(fragment_ratio_corr_healthy)[colnames(fragment_ratio_corr_healthy) == "sample"] <- "Sample"  # Standardize naming
 
 # **Filter fragment_ratio_corr to include only samples present in final_merged_df**
 fragment_ratio_corr_healthy <- fragment_ratio_corr_healthy[fragment_ratio_corr_healthy$Sample %in% final_merged_df$Sample, ]
-
 
 # Merge the filtered fragment_ratio_corr with final_merged_df
 control_scores_merged <- merge(final_merged_df, fragment_ratio_corr_healthy, by="Sample", all=TRUE)
@@ -145,15 +154,32 @@ final_df <- merge(merged_df, samples[, !(names(samples) %in% c("TS", "Library Na
 ```
 
 ```{r}
-
 # merge fragment length score (Vessie et al)
 final_df <- merge(final_df, FS_data, by.x = "Library Name", by.y = "Sample", all = TRUE)
 
+```
+
+# Process griffin scores to combine to one column 
+```{r}
 griffin_scores_all <- griffin_scores_all[, !grepl("^MeanDifference", colnames(griffin_scores_all))]
+
+# Get the raw z-score columns
+zscore_cols <- grep("^AverageZScore_", colnames(griffin_scores_all), value = TRUE)
+
+# Create cumulative z-score column by summing raw z-scores row-wise
+griffin_scores_all$consensus_griffin <- rowSums(griffin_scores_all[, zscore_cols], na.rm = TRUE)
+
+griffin_scores_all <- griffin_scores_all[, !(colnames(griffin_scores_all) %in% zscore_cols)]
+```
+
+```{r}
 
 # merge nucleosome accesibility 
 final_df <- merge(final_df, griffin_scores_all, by.x = "Library Name", by.y = "Patient", all = TRUE)
+```
 
+
+```{r}
 # merge nucleosome peaks 
 final_df <- merge(final_df, nucleosome_peak_score, by.x = "Library Name", by.y = "Sample", all = TRUE)
 
@@ -171,6 +197,9 @@ final_df_w_methy_score$cancer_status[final_df_w_methy_score$group_id == "LIB-04-
 final_df_w_methy_score$cancer_status[final_df_w_methy_score$group_id == "LIB-04-0441-T1"] <- "negative"
 final_df_w_methy_score$cancer_status[final_df_w_methy_score$group_id == "LIB-04-0024-T2"] <- "positive"
 final_df_w_methy_score$cancer_status[final_df_w_methy_score$group_id == "LIB-04-0649-T0"] <- "positive"
+# remove 2 CHARMQ samples
+final_df_w_methy_score <- final_df_w_methy_score[!grepl("T-788-T0", final_df_w_methy_score$group_id), ]
+final_df_w_methy_score <- final_df_w_methy_score[!grepl("T-207-T0", final_df_w_methy_score$group_id), ]
 
 # if it contains not_sequenced then remove... 
 final_df_w_methy_score$Mutation <- ifelse(grepl("not_sequenced", final_df_w_methy_score$Mutation), "", final_df_w_methy_score$Mutation)
@@ -181,6 +210,7 @@ write.csv(control_scores_merged_V2, file = paste0(outdir,  "/01_statistics_contr
 ```
 
 ```{r}
+
 write.csv(final_df_w_methy_score, file = paste0(outdir,  "/01_statistics_HBOC_scores.csv"), row.names = FALSE)
 ```
 

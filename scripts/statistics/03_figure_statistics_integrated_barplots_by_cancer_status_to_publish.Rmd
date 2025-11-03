@@ -130,23 +130,6 @@ data[data == "Missense_Mutation;Frame_Shift_Del"] <- "missense;frameshift"
 data[data == "Nonsense_Mutation;Missense_Mutation"] <- "stop;missense"
 ```
 
-# Process griffin scores to combine to one column 
-```{r}
-# Get the raw z-score columns
-zscore_cols <- grep("^AverageZScore_", colnames(data), value = TRUE)
-
-# Create cumulative z-score column by summing raw z-scores row-wise
-data$consensus_griffin <- rowSums(data[, zscore_cols], na.rm = TRUE)
-```
-
-```{r}
-# Identify z-score columns in scores_normal
-zscore_cols <- grep("^AverageZScore_", colnames(scores_normal), value = TRUE)
-
-# Calculate cumulative z-score for each normal sample
-scores_normal$consensus_griffin  <- rowSums(scores_normal[, zscore_cols], na.rm = TRUE)
-```
-
 # Set Factors
 ```{r}
 data$source <- factor(data$source, levels = c("first_positive_survivor_no", "cancer_status_positive_survivor_yes", "cancer_status_negative_survivor_no", "cancer_status_negative_survivor_yes"),

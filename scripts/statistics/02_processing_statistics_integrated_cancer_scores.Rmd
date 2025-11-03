@@ -102,17 +102,6 @@ data <- merge(samples, scores, by.x = c("Library Name", "TS"), by.y = c("Library
 data <- data[!data$months_to_positive %in% c("pending", "UNK"), ]
 ```
 
-# Process griffin scores to combine to one column 
-```{r}
-# Get the raw z-score columns
-zscore_cols <- grep("^AverageZScore_", colnames(data), value = TRUE)
-
-# Create cumulative z-score column by summing raw z-scores row-wise
-data$consensus_griffin <- rowSums(data[, zscore_cols], na.rm = TRUE)
-```
-
-
-
 ```{r}
 # Ensure months_to_positive is a character and clean spaces
 data$months_to_positive <- as.character(data$months_to_positive)
@@ -120,7 +109,6 @@ data$months_to_positive <- trimws(data$months_to_positive)
 
 # Convert to numeric where possible, keeping "no_future_cancer" intact
 data$months_to_positive_numeric <- suppressWarnings(as.numeric(data$months_to_positive))
-
 
 filtered_data <- data
 ```
