@@ -206,7 +206,7 @@ calculate_medfrag_only <- function(groups, merged_sample_info, merged_insert_siz
   return(medfrag_list)
 }
 
-groups <- c("HBOC", "normal")
+groups <- c("HBOC", "normal") 
 
 medfrag_summary <- calculate_medfrag_only(groups, merged_sample_info, merged_insert_size)
 

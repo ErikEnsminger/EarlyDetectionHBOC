@@ -401,18 +401,9 @@ future_cancer_summary(cancer_negative, group_label="(Cancer-Negative Samples)", 
 future_cancer_summary(cancer_negative, group_label="(Cancer-Negative Samples)", signal_limit=3)
 ```
 
-```{r}
-# Future cancer within 12 months
-future_cancer_summary(cancer_negative, group_label="(Cancer-Negative Samples)", months_limit=3)
-```
 
 ```{r}
 # Future cancer within 12 months
 future_cancer_summary(cancer_negative, group_label="(Cancer-Negative Samples)", months_limit=12)
-```
-
-```{r}
-# Future cancer within 6 months
-future_cancer_summary(cancer_negative, group_label="(Cancer-Negative Samples)", months_limit=24)
 ```
 
