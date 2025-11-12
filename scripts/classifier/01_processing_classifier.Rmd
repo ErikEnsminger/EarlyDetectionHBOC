@@ -157,9 +157,7 @@ data$months_to_positive <- as.character(data$months_to_positive)
 data$months_to_positive <- trimws(data$months_to_positive)
 
 # Convert to numeric where possible, keeping "no_future_cancer" intact
-data$months_to_positive_numeric <- suppressWarnings(as.numeric(data$months_to_positive))
-
-
+data$months_to_positive_numeric <- suppressWarnings(as.numeric(data$months_to_positive)) 
 ```
 
 # Healthy BRCA1/2m-carriers vs. Healthy Control 
