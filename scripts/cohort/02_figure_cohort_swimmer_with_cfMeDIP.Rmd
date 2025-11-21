@@ -19,7 +19,8 @@ knitr::opts_knit$set(root.dir = here::here())
 
 ```{r}
 outdir <- here::here("figures", "cohort") 
-metadata_path <- here::here("raw_data", "cohort", "HBOC_cohort_metadata.xlsx") 
+# metadata_path <- here::here("raw_data", "cohort", "HBOC_cohort_metadata.xlsx") 
+metadata_path <- "/Users/erikensminger/Library/CloudStorage/OneDrive-UniversityofToronto/HBOC_cohort_metadata.xlsx" 
 metadata <- read_excel(metadata_path, sheet="April22")
 ```
 
@@ -44,88 +45,65 @@ metadata  <- metadata[!grepl("LIB-04-0131-T0", metadata$group_id), ]
 ```
 
 ```{r}
-metadata <- metadata %>%
-  dplyr::group_by(LIB_ID) %>%
-  dplyr::mutate(
+# Find baseline timepoint based on first positive sample or first date_of_blood if none are positive
+baseline_timepoint <- metadata %>%
+  group_by(LIB_ID) %>%
+  dplyr::summarise(
     baseline = if (any(cancer_status == "positive")) {
       min(date_of_blood[cancer_status == "positive"])
     } else {
       min(date_of_blood)
     },
-    time_from_baseline = as.numeric(difftime(date_of_blood, baseline, units = "days")) / 30.44
-  ) %>%
-  dplyr::ungroup()
+    n = n()
+  )
+
+# Repeat baseline dates across rows to add as a new column
+baseline_dates <- rep(baseline_timepoint$baseline, baseline_timepoint$n)
+metadata$baseline <- baseline_dates
+```
+
+```{r}
+# Calculate time_from_baseline in months
+metadata <- metadata %>%
+  mutate(
+    time_from_baseline = as.numeric(difftime(date_of_blood, baseline, units = "days")) / 30.44  # Average days per month
+  )
 ```
 
 ```{r}
 data_sero <- distinct(metadata, LIB_ID, cancer_status, .keep_all= TRUE)
 homo_sero <- data_sero[!(data_sero$LIB_ID %in% data_sero$LIB_ID[duplicated(data_sero$LIB_ID)]), ]
+
 ```
 
 ```{r}
-# # Step 1: Classify each LIB_ID including single timepoint cases
-# data_sero <- data_sero %>%
-#   group_by(LIB_ID) %>%
-#   arrange(timepoint) %>%
-#   dplyr::summarise(
-#     converter = case_when(
-#       # Forward Phenoconverter: transition from negative to positive
-#       n() > 1 & any(cancer_status == "negative" & lead(cancer_status) == "positive") ~ "Forward \nPhenoconverters",
-#       # Reverse Phenoconverter: transition from positive to negative
-#       n() > 1 & any(cancer_status == "positive" & lead(cancer_status) == "negative") ~ "Reverse \nPhenoconverters",
-#       # Active Cancer: positive throughout or single positive timepoint
-#       all(cancer_status == "positive") ~ "Active Cancer",
-#       # Cancer Free: negative throughout or single negative timepoint
-#       all(cancer_status == "negative") ~ "Cancer Free",
-#       # Multiple Cancers: has a mix of positive and negative without straightforward conversion
-#       TRUE ~ "Multiple Cancers"
-#     )
-#   )
-# 
-# # Step 2: Set factor levels for ordered categories
-# data_sero$converter <- factor(data_sero$converter, levels = c(
-#   "Multiple Cancers", "Forward \nPhenoconverters", "Reverse \nPhenoconverters", "Active Cancer", "Cancer Free"
-# ))
-```
 
-```{r}
-data_sero <- metadata %>%
-  dplyr::group_by(LIB_ID) %>%
-  dplyr::arrange(as.numeric(timepoint)) %>%  # ensure correct order
+library(dplyr)
+library(dplyr)
+
+# Step 1: Classify each LIB_ID including single timepoint cases
+data_sero <- data_sero %>%
+  group_by(LIB_ID) %>%
+  arrange(timepoint) %>%
   dplyr::summarise(
-    converter = dplyr::case_when(
+    converter = case_when(
+      # Forward Phenoconverter: transition from negative to positive
+      n() > 1 & any(cancer_status == "negative" & lead(cancer_status) == "positive") ~ "Forward \nPhenoconverters",
+      # Reverse Phenoconverter: transition from positive to negative
+      n() > 1 & any(cancer_status == "positive" & lead(cancer_status) == "negative") ~ "Reverse \nPhenoconverters",
       # Active Cancer: positive throughout or single positive timepoint
       all(cancer_status == "positive") ~ "Active Cancer",
-      
       # Cancer Free: negative throughout or single negative timepoint
       all(cancer_status == "negative") ~ "Cancer Free",
-      
-      # Forward Phenoconverter: starts negative and has at least one positive later
-      n() > 1 &
-        dplyr::first(cancer_status) == "negative" &
-        any(cancer_status == "positive") ~ "Forward \nPhenoconverters",
-      
-      # Reverse Phenoconverter: starts positive and has at least one negative later
-      n() > 1 &
-        dplyr::first(cancer_status) == "positive" &
-        any(cancer_status == "negative") ~ "Reverse \nPhenoconverters",
-      
-      # Multiple Cancers: everything else (mixed / weird patterns)
+      # Multiple Cancers: has a mix of positive and negative without straightforward conversion
       TRUE ~ "Multiple Cancers"
-    ),
-    .groups = "drop"
+    )
   )
 
-data_sero$converter <- factor(
-  data_sero$converter,
-  levels = c(
-    "Multiple Cancers",
-    "Forward \nPhenoconverters",
-    "Reverse \nPhenoconverters",
-    "Active Cancer",
-    "Cancer Free"
-  )
-)
+# Step 2: Set factor levels for ordered categories
+data_sero$converter <- factor(data_sero$converter, levels = c(
+  "Multiple Cancers", "Forward \nPhenoconverters", "Reverse \nPhenoconverters", "Active Cancer", "Cancer Free"
+))
 ```
 
 ```{r}
