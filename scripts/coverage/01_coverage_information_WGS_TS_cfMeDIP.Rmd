@@ -52,12 +52,9 @@ samples <- samples[!grepl("T-207-T0", samples$group_id), ]
 
 # Read coverage data
 TS_coverage <- read.csv(here::here("raw_data", "coverage", "TS_coverage_summary_May27.csv"), check.names = FALSE)
-# WGS_coverage <- read.csv(here::here("raw_data", "coverage", "WGS_coverage_summary_May28.csv"), check.names = FALSE)
 WGS_coverage <- read.csv(here::here("raw_data", "coverage", "COVERAGE_HBOC_WGS_downsampled_bwa_bams_16102025_merged.csv"), check.names = FALSE)
 cfMeDIP_coverage <- read.delim(here::here("raw_data", "coverage", "cfMeDIP_aligned_reads.tsv"), sep="\t")
 
-# TS_coverage <- read.csv("./raw_data/coverage/TS_coverage_summary_V2.csv", check.names = FALSE)
-# WGS_coverage <- read.csv("./raw_data/coverage/WGS_coverage_summary_V2.csv", check.names = FALSE)
 WGS_coverage$WGS <- gsub("(_downsampled|_downsample)$", "", WGS_coverage$WGS)
 ```
 
