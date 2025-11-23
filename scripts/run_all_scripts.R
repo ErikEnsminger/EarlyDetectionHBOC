@@ -10,6 +10,39 @@ cat("\n========================================\n")
 cat("       HBOC Figure Generation Pipeline\n")
 cat("========================================\n\n")
 
+
+### ================ Set up ================
+
+download_raw_data <- function(url, dest_dir = "raw_data") {
+  # Temporary path for the zip
+  zip_path <- "raw_data.zip"
+  
+  message("Downloading raw_data.zip from Zenodo...")
+  utils::download.file(url, zip_path, mode = "wb")
+  
+  message("Unzipping into project root...")
+  utils::unzip(zip_path, exdir = ".")
+  
+  # Remove zip and __MACOSX if created
+  unlink(zip_path)
+  unlink("__MACOSX", recursive = TRUE)
+  
+  # If the archive contains raw_data/, we may want to move it
+  if (dir.exists("raw_data/raw_data")) {
+    file.rename("raw_data/raw_data", "raw_data_new")
+    unlink("raw_data", recursive = TRUE)
+    file.rename("raw_data_new", "raw_data")
+  }
+  
+  message("Raw data download complete.")
+}
+
+zenodo_url <- "https://zenodo.org/records/17684381/files/raw_data.zip?download=1" 
+
+if (!dir.exists("raw_data")) {
+  download_raw_data(zenodo_url)
+}
+
 # List of directories you want to ensure exist
 dirs <- c(
   "data",
@@ -45,7 +78,7 @@ dirs <- c(
   "figures/Statistics"
 )
 
-# Create them if they don’t exist
+# Create dir if they don’t exist
 for (d in dirs) {
   full_path <- here::here(d)
   if (!dir.exists(full_path)) {
