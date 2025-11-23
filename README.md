@@ -70,3 +70,7 @@ During execution, the pipeline will automatically:
 - generate processed datasets (`data/`)  
 - produce publication-ready figures (`figures/`)  
 - write rendered reports (`HTML/`)
+
+## Contact
+
+Author: Erik Ensminger -  erik.ensminger@uhn.ca
