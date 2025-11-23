@@ -41,23 +41,6 @@ cd EarlyDetectionHBOC
 Rscript Install_Packages.R
 ```
 
-## Quick Start
-
-### 1. Install Requirements
-- R: https://www.r-project.org  
-- RStudio (optional): https://posit.co/download/rstudio-desktop/
-
-### 2. Download or Clone This Repository
-```bash
-git clone https://github.com/ErikEnsminger/EarlyDetectionHBOC.git
-cd EarlyDetectionHBOC
-```
-
-### 3. Install Required R Packages
-```bash
-Rscript Install_Packages.R
-```
-
 This script verifies and installs all necessary R package dependencies.
 
 ### 4. Run the Full Pipeline
