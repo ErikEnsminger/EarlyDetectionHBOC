@@ -14,9 +14,6 @@ library(readxl)
 knitr::opts_knit$set(root.dir = here::here())
 ```
 
-
-
-
 ```{r}
 # outdir <- "./figures"
 outdir <- here::here("data", "DNA_extraction")
@@ -69,63 +66,11 @@ DNA_ext_w_sample_info_plasma <- DNA_ext_w_sample_info[!grepl("Buffy Coat", DNA_e
 ```
 
 ```{r}
-# common_ids <- intersect(data$group_id, DNA_ext_w_sample_info_plasma$group_id)
-# non_common_ids <- setdiff(union(data$group_id, DNA_ext_w_sample_info_plasma$group_id),
-#                           intersect(data$group_id, DNA_ext_w_sample_info_plasma$group_id))
-# 
-# # IDs in data but not in DNA_ext_sample_info_plasma
-# only_in_data <- setdiff(data$group_id, DNA_ext_w_sample_info_plasma$group_id)
-# 
-# # IDs in DNA_ext_sample_info_plasma but not in data
-# only_in_DNA_ext <- setdiff(DNA_ext_w_sample_info_plasma$group_id, data$group_id)
-# 
-# print(common_ids)
-# print(non_common_ids)
-# 
-# print(only_in_DNA_ext)
-# print(only_in_data)
-```
-
-```{r}
 DNA_ext_w_sample_info_plasma <- DNA_ext_w_sample_info_plasma[,c("group_id","ng/mL", "cancer_status", "sex")]
 DNA_ext_w_sample_info_plasma <- DNA_ext_w_sample_info_plasma[!grepl("T-788-T0", DNA_ext_w_sample_info_plasma$group_id), ]
 DNA_ext_w_sample_info_plasma <- DNA_ext_w_sample_info_plasma[!grepl("T-207-T0", DNA_ext_w_sample_info_plasma$group_id), ]
 ```
 
-# HBOC Samples 
-```{r}
-# # Overall
-# overall_median <- median(DNA_ext_w_sample_info_plasma$`ng/mL`, na.rm = TRUE)
-# overall_sd <- sd(DNA_ext_w_sample_info_plasma$`ng/mL`, na.rm = TRUE)
-# 
-# # Cancer-negative
-# neg <- DNA_ext_w_sample_info_plasma[DNA_ext_w_sample_info_plasma$cancer_status == "negative", ]
-# neg_median <- median(neg$`ng/mL`, na.rm = TRUE)
-# neg_sd <- sd(neg$`ng/mL`, na.rm = TRUE)
-# 
-# # Cancer-positive
-# pos <- DNA_ext_w_sample_info_plasma[DNA_ext_w_sample_info_plasma$cancer_status == "positive", ]
-# pos_median <- median(pos$`ng/mL`, na.rm = TRUE)
-# pos_sd <- sd(pos$`ng/mL`, na.rm = TRUE)
-# 
-# # Male BRCA1/2m-carriers
-# male <- pos[pos$sex == "male", ]
-# male_median <- median(male$`ng/mL`, na.rm = TRUE)
-# male_sd <- sd(male$`ng/mL`, na.rm = TRUE)
-# 
-# # Female BRCA1/2m-carriers
-# female <- pos[pos$sex == "female", ]
-# female_median <- median(female$`ng/mL`, na.rm = TRUE)
-# female_sd <- sd(female$`ng/mL`, na.rm = TRUE)
-# 
-# # Output
-# cat(sprintf("DNA extraction yielded a median of %.1f ng/mL of plasma (SD = %.1f) with no difference detected between cancer-negative (median = %.1f, SD = %.1f) and cancer-positive (median = %.1f, SD = %.1f) BRCA1/2m-carriers, male (median = %.1f, SD = %.1f) and female (median = %.1f, SD = %.1f) BRCA1/2m-carriers.\n",
-#   overall_median, overall_sd,
-#   neg_median, neg_sd,
-#   pos_median, pos_sd,
-#   male_median, male_sd,
-#   female_median, female_sd))
-```
 
 ```{r}
 # Use full HBOC dataset (no outlier removed)
@@ -165,7 +110,6 @@ cat(sprintf(
   female_median, female_sd
 ))
 ```
-
 
 # Control Samples 
 ```{r}
