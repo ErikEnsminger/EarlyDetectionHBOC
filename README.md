@@ -6,7 +6,7 @@ The pipeline runs end-to-end automatically: it prepares directories, checks and 
 
 ## Data
 Raw input data are available on Zenodo:  
-[https://zenodo.org/records/17684381](https://zenodo.org/records/17691465)
+[https://zenodo.org/records/17753755](https://zenodo.org/records/17753755)
 
 If the `raw_data/` folder is missing, the pipeline will automatically download and unzip the dataset.
 
